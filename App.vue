@@ -89,4 +89,5 @@
 	@import '@/common/uni-icons.css';
 	@import '@/common/admin-icons.css';
 	@import '@/common/theme.scss';
+	@import 'https://unpkg.com/element-ui/lib/theme-chalk/index.css';
 </style>
