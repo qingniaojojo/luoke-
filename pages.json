@@ -154,6 +154,12 @@
         "enablePullDownRefresh": false,
         "navigationBarTitleText": "实名认证"
     }
+},
+{
+	"path": "pages/bizhi/classfly",
+	"style": {
+		"navigationBarTitleText": "分类管理"
+	}
 }
 ],
 	"subPackages": [{
