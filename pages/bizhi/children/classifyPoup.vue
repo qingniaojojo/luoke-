@@ -104,7 +104,7 @@ const submit = async()=>{//使用 async/await 处理异步验证
 		//validate是uni-forms 组件内置的验证方法
 		let file = await uploadFile();//上传图片到云端的按钮处理
 		formData.value.picurl = cloudToHttps(file.fileID);
-		console.log(formData.value);
+		console.log(formData.value);//打印formData.value，查看上传的图片路径是否正确赋值
 	}catch(err){
 		console.log(err); //捕获验证失败的错误
 	}
