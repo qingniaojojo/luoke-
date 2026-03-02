@@ -19,17 +19,17 @@
 			<uni-table border stripe emptyText="暂无更多数据" >
 				<!-- 表头行 -->
 				<uni-tr>
-					<uni-th align="left">缩略图</uni-th>
+					<uni-th align="left" width="150">缩略图</uni-th>
 					<uni-th align="left">分类名称</uni-th>
 					<uni-th align="left">排序</uni-th>
 					<uni-th align="left">是否推荐</uni-th>
 					<uni-th align="left">是否启用</uni-th>
-					<uni-th align="right">操作</uni-th>
+					<uni-th align="right"width="200">操作</uni-th>
 				</uni-tr>
 				<!-- 表格数据行 -->
-				<uni-tr>
+				<uni-tr v-for="item in 5">
 					<uni-td>
-						<image src="../../static/logo.png" mode="aspectFill"></image>
+						<image class="thumb" src="../../static/logo.png" mode="aspectFill"></image>
 					</uni-td>
 					<uni-td>
 						属性
@@ -44,13 +44,19 @@
 						<switch style="transform:scale(0.6);transform-origin: left center;" />
 					</uni-td>
 					<uni-td>
-						1
+						<view class="operate-btn-group">
+							<button size="mini" type="primary" plain>修改</button>
+							<button size="mini" type="warn" plain>删除</button>
+						</view>
 					</uni-td>
 				</uni-tr>
 			
 			</uni-table>
 		</view>
-
+		
+		<view class="paging">
+			<uni-pagination title="标题文字" show-icon="true" total="50" current="2"></uni-pagination>
+		</view>
 	</view>
 </template>
 
@@ -61,5 +67,16 @@
 <style lang="scss" scoped>
 .main{
 	padding: 10px;
+	.thumb{
+		width: 45px;
+		height: 90px;
+		border-radius: 3px;
+		overflow: hidden;
+		
+		image{
+			width: 100%;
+			height: 100%;
+		}
+	}
 }
 </style>
