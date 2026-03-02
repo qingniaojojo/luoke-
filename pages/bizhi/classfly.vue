@@ -12,11 +12,15 @@
 				</button>
 				<button type="warn" size="mini">
 					<uni-icons type="trash" size="14" color="#fff"></uni-icons>
-					批量删除</button>
+					批量删除
+				</button>
 			</template>
 		</custom-head-top>
+
+
 		<view class="main">
 			<uni-table border stripe emptyText="暂无更多数据" >
+
 				<!-- 表头行 -->
 				<uni-tr>
 					<uni-th align="left" width="150">缩略图</uni-th>
@@ -61,8 +65,9 @@
 		<view class="paging">
 			<uni-pagination title="标题文字" show-icon="true" total="50" current="2"></uni-pagination>
 		</view>
-
+		<!-- 分类管理弹窗组件，type="center"表示居中显示 -->
 		<uni-popup ref="ClassifyPopup" type="center">
+			<!-- 弹窗内容区域 -->
 			<view class="ClassifyPopup">弹出</view>
 		</uni-popup>
 
@@ -71,7 +76,9 @@
 
 <script setup>
 import { ref } from 'vue';
+// 创建弹窗组件的响应式引用，用于操作弹窗
 const ClassifyPopup = ref(null)
+// 点击新增分类按钮时调用，打开弹窗
 const handleAPP = ()=>{
 	ClassifyPopup.value.open();
 }
