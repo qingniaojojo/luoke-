@@ -26,6 +26,8 @@
 					<uni-th align="left">是否启用</uni-th>
 					<uni-th align="right"width="200">操作</uni-th>
 				</uni-tr>
+
+				
 				<!-- 表格数据行 -->
 				<uni-tr v-for="item in 5">
 					<uni-td>
@@ -49,14 +51,18 @@
 							<button size="mini" type="warn" plain>删除</button>
 						</view>
 					</uni-td>
+
 				</uni-tr>
 			
 			</uni-table>
 		</view>
 		
+
 		<view class="paging">
 			<uni-pagination title="标题文字" show-icon="true" total="50" current="2"></uni-pagination>
 		</view>
+
+
 	</view>
 </template>
 
