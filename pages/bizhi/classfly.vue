@@ -6,7 +6,7 @@
 			</template>
 			
 			<template #right>
-				<button type="primary" size="mini">
+				<button type="primary" size="mini" @click="handleAPP">
 					<uni-icons type="plusempty" size="14" color="#fff"></uni-icons>
 					新增分类
 				</button>
@@ -62,11 +62,19 @@
 			<uni-pagination title="标题文字" show-icon="true" total="50" current="2"></uni-pagination>
 		</view>
 
+		<uni-popup ref="ClassifyPopup" type="center">
+			<view class="ClassifyPopup">弹出</view>
+		</uni-popup>
 
 	</view>
 </template>
 
 <script setup>
+import { ref } from 'vue';
+const ClassifyPopup = ref(null)
+const handleAPP = ()=>{
+	ClassifyPopup.value.open();
+}
 	
 </script>
 
