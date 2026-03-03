@@ -66,9 +66,18 @@
 			<uni-pagination title="标题文字" show-icon="true" total="50" current="2"></uni-pagination>
 		</view>
 		<!-- 分类管理弹窗组件，type="center"表示居中显示 -->
-		<uni-popup ref="ClassifyPopup" type="center">
+		<uni-popup ref="ClassifyPopup" type="center" :is-mask-click="false">
 			<!-- 弹窗内容区域 -->
-			<view class="ClassifyPopup">弹出</view>
+			<view class="ClassifyPopup">
+				<uni-forms :modelValue="formData" label-align="right" :label-width="100">
+						<uni-forms-item label="名称" name="name">
+							<uni-easyinput type="text" v-model="formData.name" placeholder="请输入属性名称" />
+						</uni-forms-item>
+						<uni-forms-item label="排序" name="sort">
+							<uni-easyinput type="number" v-model="formData.sort" placeholder="请输入排序" />
+						</uni-forms-item>
+				</uni-forms>
+			</view>
 		</uni-popup>
 
 	</view>
@@ -76,6 +85,10 @@
 
 <script setup>
 import { ref } from 'vue';
+const formData = ref({
+	name:"",
+	sort:0
+})
 // 创建弹窗组件的响应式引用，用于操作弹窗
 const ClassifyPopup = ref(null)
 // 点击新增分类按钮时调用，打开弹窗
@@ -86,6 +99,13 @@ const handleAPP = ()=>{
 </script>
 
 <style lang="scss" scoped>
+.ClassifyPopup{
+	background: #fff;
+	width: 600px;
+	min-height: 200px;
+	padding:50px 50px 50px 0px;
+}
+
 .main{
 	padding: 10px;
 	.thumb{
