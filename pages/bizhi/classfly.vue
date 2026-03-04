@@ -76,6 +76,21 @@
 						<uni-forms-item label="排序" name="sort">
 							<uni-easyinput type="number" v-model="formData.sort" placeholder="请输入排序" />
 						</uni-forms-item>
+						<uni-forms-item label="缩略图" name="sort">
+							
+						</uni-forms-item>
+						<uni-forms-item label="是否推荐" name="select">
+							<switch v-model="formData.select" style="transform:scale(0.6);transform-origin: left center;"/>
+						</uni-forms-item>
+						<uni-forms-item label="是否启用" name="enable">
+							<switch v-model="formData.enable" style="transform:scale(0.6);transform-origin: left center;"/>
+						</uni-forms-item>
+						<uni-forms-item label="" name="sort">
+							<view class="group">
+								<button size="mini" type="primary">确认</button>
+								<button size="mini" type="default" @click="classifyCancel">取消</button>
+							</view>
+						</uni-forms-item>
 				</uni-forms>
 			</view>
 		</uni-popup>
@@ -87,13 +102,18 @@
 import { ref } from 'vue';
 const formData = ref({
 	name:"",
-	sort:0
+	sort:0,
+	select:false,
+	enable:false
 })
 // 创建弹窗组件的响应式引用，用于操作弹窗
 const ClassifyPopup = ref(null)
 // 点击新增分类按钮时调用，打开弹窗
 const handleAPP = ()=>{
 	ClassifyPopup.value.open();
+}
+const classifyCancel = ()=>{
+	ClassifyPopup.value.close();
 }
 	
 </script>
@@ -104,6 +124,15 @@ const handleAPP = ()=>{
 	width: 600px;
 	min-height: 200px;
 	padding:50px 50px 50px 0px;
+	.group{
+		display: flex;
+		justify-content: start;
+		gap: 20px;
+		button{
+			margin: 0;
+			width:130px;
+		}
+	}
 }
 
 .main{
