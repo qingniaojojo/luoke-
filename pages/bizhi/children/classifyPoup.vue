@@ -4,9 +4,9 @@
 		<!-- 弹窗内容区域 -->
 		<view class="ClassifyPopup">
 			<!-- 分类表单 -->
-			<uni-forms :modelValue="formData" label-align="right" :label-width="100">
+			<uni-forms ref="formRef" :modelValue="formData" :rules="rules" label-align="right" :label-width="100">
 					<!-- 分类名称输入框 -->
-					<uni-forms-item label="名称" name="name">
+					<uni-forms-item label="名称" name="name" required>
 						<uni-easyinput type="text" v-model="formData.name" placeholder="请输入属性名称" />
 					</uni-forms-item>
 					<!-- 排序输入框 -->
@@ -19,19 +19,20 @@
 					</uni-forms-item>
 						<!-- 是否推荐开关 -->
 					<uni-forms-item label="是否推荐" name="select">
-						<switch v-model="formData.select" style="transform:scale(0.6);transform-origin: left center;"/>
+						<switch v-model="formData.select" style="transform:scale(0.6);transform-origin: left center;" @change="selectChange"/>
 					</uni-forms-item>
 						<!-- 是否启用开关 -->
 					<uni-forms-item label="是否启用" name="enable">
-						<switch v-model="formData.enable" style="transform:scale(0.6);transform-origin: left center;"/>
+						<switch v-model="formData.enable" style="transform:scale(0.6);transform-origin: left center;"@change="enableChange"/>
 					</uni-forms-item>
 						<!-- 操作按钮组 -->
 					<uni-forms-item label="" name="sort">
 						<view class="group">
-							<button size="mini" type="primary">确认</button>
+							<button size="mini" type="primary" @click="submit">确认</button>
 							<button size="mini" type="default" @click="close">取消</button>
 						</view>
 					</uni-forms-item>
+					
 			</uni-forms>
 		</view>
 	</uni-popup>
@@ -39,8 +40,13 @@
 
 <script setup>
 import { ref } from 'vue';
+
+//点击确认按钮时进行校验
+const formRef = ref(null)
+
 // 创建弹窗组件的响应式引用，用于操作弹窗
 const ClassifyPopup = ref(null);
+
 // 分类表单数据
 const formData = ref({
 	name:"",
@@ -49,21 +55,60 @@ const formData = ref({
 	enable:false
 })
 
+//校验规则必须写名字
+const rules = ref({
+	name:{
+		rules:[
+			// 校验 name 不能为空
+			{
+				required: true,
+				errorMessage: '请填写属性',
+			},
+			// 对name字段进行长度验证
+			{
+				minLength: 2,
+				maxLength: 8,
+				errorMessage: '{label}名称长度在 {minLength} 到 {maxLength} 个字符例如“火系”',
+			}
+		],
+		label:"属性"//定义label属性的名称，它和rules一个等级
+	}
+})
+
+const submit = async()=>{
+	try{
+		await formRef.value.validate();
+		console.log(formData.value);
+	}catch(err){
+		console.log(err);
+	}
+}
+
+//是否推荐事件
+const selectChange = (e)=>{
+	formData.value.select = e.detail.value
+}
+//是否启用事件
+const enableChange = (e)=>{
+	formData.value.enable = e.detail.value
+}
+
 //执行打开（open）方法
 const open =()=>{
 	ClassifyPopup.value.open();
 }
 
-//取消新增
+//取消新增。因为取消在组件里面所以不需要暴露close，只要调用调用打开弹窗，就可以用取消弹窗
 const close = ()=>{
 	ClassifyPopup.value.close();
 }
 
 //暴露open方法
 defineExpose({
-	open,
-	close
+	open
 })
+
+
 </script>
 
 <style lang="scss" scoped>

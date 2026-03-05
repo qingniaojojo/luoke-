@@ -66,7 +66,7 @@
 			<uni-pagination title="标题文字" show-icon="true" total="50" current="2"></uni-pagination>
 		</view>
 
-		<classifyPopup ref="classPopRef"> </classifyPopup>
+		<classifyPopup ref="classPopRef"> </classifyPopup><!-- 被封装的弹窗调用 -->
 
 	</view>
 </template>
