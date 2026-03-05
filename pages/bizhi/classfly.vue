@@ -65,75 +65,26 @@
 		<view class="paging">
 			<uni-pagination title="标题文字" show-icon="true" total="50" current="2"></uni-pagination>
 		</view>
-		<!-- 分类管理弹窗组件，type="center"表示居中显示 -->
-		<uni-popup ref="ClassifyPopup" type="center" :is-mask-click="false">
-			<!-- 弹窗内容区域 -->
-			<view class="ClassifyPopup">
-				<uni-forms :modelValue="formData" label-align="right" :label-width="100">
-						<uni-forms-item label="名称" name="name">
-							<uni-easyinput type="text" v-model="formData.name" placeholder="请输入属性名称" />
-						</uni-forms-item>
-						<uni-forms-item label="排序" name="sort">
-							<uni-easyinput type="number" v-model="formData.sort" placeholder="请输入排序" />
-						</uni-forms-item>
-						<uni-forms-item label="缩略图" name="sort">
-							
-						</uni-forms-item>
-						<uni-forms-item label="是否推荐" name="select">
-							<switch v-model="formData.select" style="transform:scale(0.6);transform-origin: left center;"/>
-						</uni-forms-item>
-						<uni-forms-item label="是否启用" name="enable">
-							<switch v-model="formData.enable" style="transform:scale(0.6);transform-origin: left center;"/>
-						</uni-forms-item>
-						<uni-forms-item label="" name="sort">
-							<view class="group">
-								<button size="mini" type="primary">确认</button>
-								<button size="mini" type="default" @click="classifyCancel">取消</button>
-							</view>
-						</uni-forms-item>
-				</uni-forms>
-			</view>
-		</uni-popup>
+
+		<classifyPopup ref="classPopRef"> </classifyPopup>
 
 	</view>
 </template>
 
 <script setup>
-import { ref } from 'vue';
-const formData = ref({
-	name:"",
-	sort:0,
-	select:false,
-	enable:false
-})
-// 创建弹窗组件的响应式引用，用于操作弹窗
-const ClassifyPopup = ref(null)
-// 点击新增分类按钮时调用，打开弹窗
+import { ref } from "vue";
+import classifyPopup from "./children/classifyPoup.vue"
+const classPopRef = ref(null);
+// 点击新增分类按钮时调用，打开弹窗。为了在父组件中调用子组件
 const handleAPP = ()=>{
-	ClassifyPopup.value.open();
+	classPopRef.value.open();
 }
-const classifyCancel = ()=>{
-	ClassifyPopup.value.close();
-}
+
 	
 </script>
 
 <style lang="scss" scoped>
-.ClassifyPopup{
-	background: #fff;
-	width: 600px;
-	min-height: 200px;
-	padding:50px 50px 50px 0px;
-	.group{
-		display: flex;
-		justify-content: start;
-		gap: 20px;
-		button{
-			margin: 0;
-			width:130px;
-		}
-	}
-}
+
 
 .main{
 	padding: 10px;
