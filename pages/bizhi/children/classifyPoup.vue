@@ -20,6 +20,7 @@
 						<!-- 是否推荐开关 -->
 					<uni-forms-item label="是否推荐" name="select">
 						<switch v-model="formData.select" style="transform:scale(0.6);transform-origin: left center;" @change="selectChange"/>
+						<!-- "selectChange"和"enableChange"监听 switch 组件的状态变化事件 -->
 					</uni-forms-item>
 						<!-- 是否启用开关 -->
 					<uni-forms-item label="是否启用" name="enable">
@@ -61,7 +62,7 @@ const rules = ref({
 		rules:[
 			// 校验 name 不能为空
 			{
-				required: true,
+				required: true,//必填验证，提示"请填写属性"
 				errorMessage: '请填写属性',
 			},
 			// 对name字段进行长度验证
@@ -75,22 +76,22 @@ const rules = ref({
 	}
 })
 
-const submit = async()=>{
-	try{
-		await formRef.value.validate();
-		console.log(formData.value);
+const submit = async()=>{//使用 async/await 处理异步验证
+	try{//验证通过执行 try 块，失败执行 catch 块
+		await formRef.value.validate();// 触发表单验证（formRef.value.validate() 触发所有字段的验证）
+		console.log(formData.value);// 验证通过后输出数据
 	}catch(err){
-		console.log(err);
+		console.log(err); //捕获验证失败的错误
 	}
 }
 
 //是否推荐事件
-const selectChange = (e)=>{
-	formData.value.select = e.detail.value
+const selectChange = (e)=>{//接收事件参数 e
+	formData.value.select = e.detail.value//是否推荐开关状态改变时，更新formData的select属性
 }
 //是否启用事件
 const enableChange = (e)=>{
-	formData.value.enable = e.detail.value
+	formData.value.enable = e.detail.value//是否启用开关状态改变时，更新formData的enable属性
 }
 
 //执行打开（open）方法
