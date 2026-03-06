@@ -24,7 +24,7 @@
 				<!-- 表头行 -->
 				<uni-tr>
 					<uni-th align="left" width="150">缩略图</uni-th>
-					<uni-th align="left">分类名称</uni-th>
+					<uni-th align="left">属性名称</uni-th>
 					<uni-th align="left">排序</uni-th>
 					<uni-th align="left">是否推荐</uni-th>
 					<uni-th align="left">是否启用</uni-th>
