@@ -1,0 +1,22 @@
+[33m92372cb[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m HEAD@{0}: pull origin main: Fast-forward
+[33m4f1f8eb[m HEAD@{1}: checkout: moving from 17599ed030265b330a220740f20ff8b00c11d9bc to main
+[33m17599ed[m HEAD@{2}: commit: 下载云函数以及图片上传模块
+[33m781e826[m HEAD@{3}: commit: 缩略图模块
+[33ma6699d4[m HEAD@{4}: commit: 补充表单校验的注释
+[33md34ddaa[m HEAD@{5}: commit: 表单校验
+[33m100eade[m HEAD@{6}: commit: 对弹窗页面进行封装
+[33mbb75a8e[m HEAD@{7}: commit: 弹窗的点击退出
+[33mcdf7139[m HEAD@{8}: commit: 弹窗页面设置1
+[33m5c5ca0f[m HEAD@{9}: commit: 写注释
+[33m678afca[m HEAD@{10}: commit: 弹出页面与按钮绑定
+[33m046ac0b[m HEAD@{11}: commit: 调整代码间距
+[33m89e8cc3[m HEAD@{12}: checkout: moving from main to 89e8cc38ca321fdd07d2f236947649efe65a044a
+[33m4f1f8eb[m HEAD@{13}: commit (merge): Merge branch 'main' of https://gitcode.com/qingniaojojo/111
+[33m89e8cc3[m HEAD@{14}: commit: 表格调整和页面分页组件插入
+[33mb53670b[m HEAD@{15}: commit (amend): 表格编写
+[33mf39dbc7[m HEAD@{16}: commit: 表格编写
+[33m40791ef[m HEAD@{17}: commit: 项目规则文件
+[33m80e4914[m HEAD@{18}: commit: vscode的自动文件
+[33mfe11d1b[m HEAD@{19}: commit: 写了管理页面的头部
+[33m7730188[m HEAD@{20}: commit: 更多图标
+[33m1338c60[m HEAD@{21}: commit (initial): first commit
