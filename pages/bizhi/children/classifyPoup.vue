@@ -62,7 +62,7 @@
 
 <script setup>
 import { ref } from 'vue';
-import {cloudToHttps} from "@/utils/tools.js";
+import {cloudToHttps,convertBlobUrlToWebP} from "@/utils/tools.js";
 import dayjs from "dayjs";//导入dayjs
 //点击确认按钮时进行校验
 const formRef = ref(null);
@@ -111,8 +111,9 @@ const submit = async()=>{//使用 async/await 处理异步验证
 }
 //上传图片到云端
 const uploadFile = async()=>{
+	let tempurl = await convertBlobUrlToWebP(formData.value.tempurl);//将blob URL 格式的图像转换为 WebP 格式
 	return await uniCloud.uploadFile({
-		filePath:formData.value.tempurl,//本地地址
+		filePath: tempurl,//将压缩后的图片上传到云端
 		cloudPath:"wallpaper/"+dayjs().format("YYYYMMDD")+"/"+Date.now()+".jpg"//云端地址
 	})
 }
