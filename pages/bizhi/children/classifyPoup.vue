@@ -11,7 +11,7 @@
 					</uni-forms-item>
 					<!-- 排序输入框 -->
 					<uni-forms-item label="排序" name="sort">
-						<uni-easyinput type="number" v-model="formData.sort" placeholder="请输入排序" />
+						<uni-easyinput type="number" v-model.number="formData.sort" placeholder="请输入排序" />
 					</uni-forms-item>
 					<!-- 缩略图上传，不校验不用加name -->
 					<uni-forms-item label="缩略图">
@@ -64,7 +64,6 @@
 import { ref, onUnmounted } from 'vue';
 import {cloudToHttps,convertBlobUrlToWebP} from "@/utils/tools.js";
 import dayjs from "dayjs";//导入dayjs
-
 onUnmounted(() => {
   // 组件卸载时释放内存，避免内存泄漏
   if (formData.value.tempurl) {
@@ -115,7 +114,8 @@ const submit = async()=>{//使用 async/await 处理异步验证
     	if (formData.value.tempurl) {
       		URL.revokeObjectURL(formData.value.tempurl);
     	}
-		console.log(formData.value);//打印formData.value，查看上传的图片路径是否正确赋值
+		let {tempurl,...params} = formData.value;// 从 formData.value 中解构出 tempurl 字段,也就是剥离出来tempurl 字段，将剩余字段赋值给 params
+		console.log(params);//打印formData.value，查看上传的图片路径是否正确赋值
 	}catch(err){
 		console.log(err); //捕获验证失败的错误
 	}
