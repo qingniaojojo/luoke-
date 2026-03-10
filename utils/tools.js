@@ -9,7 +9,7 @@ export const cloudToHttps = (str)=>{
  * @param {number} quality - WebP 质量 (0-1)，默认 0.8
  * @returns {Promise<string>} - 返回转换后的 blob URL
  */
-export const convertBlobUrlToWebP = (blobUrl, quality = 0.9) => new Promise((resolve, reject) => {
+export const convertBlobUrlToWebP = (blobUrl, quality = 0.9) => new Promise((resolve, reject) => {//暴露函数
   const img = new Image();
   img.crossOrigin = 'anonymous'; // 处理跨域
   img.onload = () => {

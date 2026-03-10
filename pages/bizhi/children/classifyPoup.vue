@@ -61,9 +61,16 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, onUnmounted } from 'vue';
 import {cloudToHttps,convertBlobUrlToWebP} from "@/utils/tools.js";
 import dayjs from "dayjs";//导入dayjs
+
+onUnmounted(() => {
+  // 组件卸载时释放内存，避免内存泄漏
+  if (formData.value.tempurl) {
+    URL.revokeObjectURL(formData.value.tempurl);
+  }
+});
 //点击确认按钮时进行校验
 const formRef = ref(null);
 // 创建弹窗组件的响应式引用，用于操作弹窗
@@ -104,6 +111,10 @@ const submit = async()=>{//使用 async/await 处理异步验证
 		//validate是uni-forms 组件内置的验证方法
 		let file = await uploadFile();//上传图片到云端的按钮处理
 		formData.value.picurl = cloudToHttps(file.fileID);
+		// 上传成功后释放内存
+    	if (formData.value.tempurl) {
+      		URL.revokeObjectURL(formData.value.tempurl);
+    	}
 		console.log(formData.value);//打印formData.value，查看上传的图片路径是否正确赋值
 	}catch(err){
 		console.log(err); //捕获验证失败的错误
@@ -112,7 +123,7 @@ const submit = async()=>{//使用 async/await 处理异步验证
 //上传图片到云端
 const uploadFile = async()=>{
 	let tempurl = await convertBlobUrlToWebP(formData.value.tempurl);//将blob URL 格式的图像转换为 WebP 格式
-	return await uniCloud.uploadFile({
+	return await uniCloud.uploadFile({//
 		filePath: tempurl,//将压缩后的图片上传到云端
 		cloudPath:"wallpaper/"+dayjs().format("YYYYMMDD")+"/"+Date.now()+".jpg"//云端地址
 	})
@@ -128,6 +139,10 @@ const selectPicurl = ()=>{
 	})
 }// 删除图片函数，清空临时图片路径
 const delImg = ()=>{
+	// 删除图片时释放内存
+  	if (formData.value.tempurl) {
+    	URL.revokeObjectURL(formData.value.tempurl);
+  	}
 	formData.value.tempurl = ''// 清空临时图片路径，隐藏图片预览
 }
 
@@ -146,6 +161,10 @@ const open =()=>{
 }
 //取消新增。因为取消在组件里面所以不需要暴露close，只要调用调用打开弹窗，就可以用取消弹窗
 const close = ()=>{
+	// 关闭弹窗前释放内存
+  	if (formData.value.tempurl) {
+    	URL.revokeObjectURL(formData.value.tempurl);
+  	}
 	ClassifyPopup.value.close();
 }
 
