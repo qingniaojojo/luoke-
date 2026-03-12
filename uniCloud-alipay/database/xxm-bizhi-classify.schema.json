@@ -1,50 +1,49 @@
 {
-	"bsonType": "object",
-	"required": [
+	"bsonType": "object",//固定节点
+	"required": [//必填字段
 		"name"
 	],
 	"permission": {
 		"read": true,
 		"create": false,
 		"update": false,
-		"delete": false
+		"delete": false//增删改查权限开启与关闭
 	},
 	"properties": {
 		"_id": {
 			"description": "存储文档 ID（文章 ID），系统自动生成"
 		},
 		"name": {
-			"bsonType": "string",
-			"description": "类别名称",
+			"bsonType": "string",//字段类型
+			"description": "类别名称",//备注
 			"label": "名称",
-			"trim": "both"
+			"trim": "both",
+			"minLength": 2,
+			"maxLength": 6
 		},
-		"description": {
-			"bsonType": "string",
-			"description": "类别描述",
-			"label": "描述",
-			"trim": "both"
+		"select": {
+			"bsonType": "bool",
+			"description": "是否推荐，默认false，true是精选",
+			"defaultValue" : false
 		},
-		"icon": {
-			"bsonType": "string",
-			"description": "类别图标地址",
-			"label": "图标地址",
-			"pattern": "^(http://|https://|/|./|@/)\\S",
-			"trim": "both"
+		"enable": {
+			"bsonType": "bool",
+			"description": "是否启用，默认false，true是精选",
+			"defaultValue" : false
 		},
 		"sort": {
 			"bsonType": "int",
 			"description": "类别显示顺序",
 			"label": "排序"
 		},
-		"article_count": {
-			"bsonType": "int",
-			"description": "该类别下文章数量"
+		"picurl": {
+			"bsonType": "string",
+			"description": "缩略图地址"
 		},
-		"create_date": {
+		"createTime": {
 			"bsonType": "timestamp",
 			"description": "创建时间",
-			"forceDefaultValue": {
+			"forceDefaultValue": {//一个特定的字段，规定上传当时的时间到数据库
 				"$env": "now"
 			}
 		}

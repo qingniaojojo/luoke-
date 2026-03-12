@@ -64,6 +64,7 @@
 import { ref, onUnmounted } from 'vue';
 import {cloudToHttps,convertBlobUrlToWebP} from "@/utils/tools.js";
 import dayjs from "dayjs";//导入dayjs
+const classifyCloundObj = uniCloud.importObject("admin-bizhi-classify");
 onUnmounted(() => {
   // 组件卸载时释放内存，避免内存泄漏
   if (formData.value.tempurl) {
@@ -115,6 +116,7 @@ const submit = async()=>{//使用 async/await 处理异步验证
       		URL.revokeObjectURL(formData.value.tempurl);
     	}
 		let {tempurl,...params} = formData.value;// 从 formData.value 中解构出 tempurl 字段,也就是剥离出来tempurl 字段，将剩余字段赋值给 params
+		let res = await classifyCloundObj.add(params);//调用云数据库对象的add方法，将想要新增的数据添加到云数据库中，等待操作完成后将结果赋值给变量res。
 		console.log(params);//打印formData.value，查看上传的图片路径是否正确赋值
 	}catch(err){
 		console.log(err); //捕获验证失败的错误
