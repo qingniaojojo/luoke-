@@ -67,27 +67,28 @@
 			<!-- <uni-pagination title="标题文字" show-icon="true" total="3" current="2"></uni-pagination>-->
 		</view>
 
-		<classifyPopup ref="classPopRef"> </classifyPopup><!-- 被封装的弹窗调用 -->
+		<classifyPopup ref="classPopRef" @success="getClassify()"> </classifyPopup><!-- 被封装的弹窗调用 新增分类弹窗成功后(触发success事件)，刷新分类列表(用getClassify())-->
+
 
 	</view>
 </template>
 
 <script setup>
-import { ref } from "vue";
-import classifyPopup from "./children/classifyPoup.vue"
-import { showToast } from "../../utils/common";
+import { ref } from "vue";//引入vue的ref函数
+import classifyPopup from "./children/classifyPoup.vue"//引入新增分类弹窗组件
+import { showToast } from "../../utils/common";//引入提示函数
 const classifyCloudObj = uniCloud.importObject("admin-bizhi-classify")//拿取云对象
-const classPopRef = ref(null);
-const classData = ref([]);
+const classPopRef = ref(null);//新增分类弹窗引用
+const classData = ref([]);//分类列表数据
 // 点击新增分类按钮时调用，打开弹窗。为了在父组件中调用子组件
-const handleAPP = ()=>{
-	classPopRef.value.open();
+const handleAPP = ()=>{//新增分类
+	classPopRef.value.open();//打开新增分类弹窗
 }
 
-const getClassify = async()=>{
-	let {errCode,errMsg,data} = await classifyCloudObj.list();
-	if(errCode!==0) return showToast({title:errMsg});
-	classData.value = data;
+const getClassify = async()=>{//获取分类列表
+	let {errCode,errMsg,data} = await classifyCloudObj.list();//调用云函数list
+	if(errCode!==0) return showToast({title:errMsg});//如果获取分类列表失败，提示错误信息
+	classData.value = data;//将获取到的分类列表赋值给classData
 	console.log(data);
 }
 
@@ -97,15 +98,15 @@ getClassify();
 <style lang="scss" scoped>
 
 
-.main{
-	padding: 10px;
-	.thumb{
+.main{//分类列表主容器
+	padding: 10px;//分类列表主容器内边距
+	.thumb{//分类列表缩略图
 		width: 70px;
 		height: 70px;
 		border-radius: 3px;
-		overflow: hidden;
+		overflow: hidden;//分类列表缩略图超出部分隐藏
 		
-		image{
+		image{//分类列表缩略图图片
 			width: 100%;
 			height: 100%;
 		}

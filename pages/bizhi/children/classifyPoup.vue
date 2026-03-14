@@ -61,21 +61,19 @@
 </template>
 
 <script setup>
-import { ref, onUnmounted} from 'vue';
+import { ref, onUnmounted} from 'vue';//引入ref，以及onUnmounted生命周期
 import {cloudToHttps,convertBlobUrlToWebP} from "@/utils/tools.js";//用来导入压缩图片功能的云函数的方法
 import dayjs from "dayjs";//导入dayjs
 import { showToast } from '../../../utils/common';
+const emits = defineEmits(["success"]);//常量起名emits，定义事件（名称success），用于子组件向父组件通信
 const classifyCloundObj = uniCloud.importObject("admin-bizhi-classify",{customUI:true});//导入云函数对象，用于调用云函数.{customUI:true}关闭云对象的loading加载
 onUnmounted(() => {
-  // 组件卸载时释放内存，避免内存泄漏
-  if (formData.value.tempurl) {
+  if (formData.value.tempurl) {// 组件卸载时释放内存，避免内存泄漏
     URL.revokeObjectURL(formData.value.tempurl);
   }
 });
-//点击确认按钮时进行校验
-const formRef = ref(null);
-// 创建弹窗组件的响应式引用，用于操作弹窗
-const ClassifyPopup = ref(null);
+const formRef = ref(null);//点击确认按钮时进行校验
+const ClassifyPopup = ref(null);// 创建弹窗组件的响应式引用，用于操作弹窗
 
 // 分类表单数据
 const formData = ref({
@@ -87,8 +85,7 @@ const formData = ref({
 	tempurl:""// 图片临时路径，用于预览
 })
 
-//校验规则必须写名字  先执行 submit 函数，然后在 submit 函数内部触发对 rules 的验证
-const rules = ref({
+const rules = ref({//校验规则必须写名字  先执行 submit 函数，然后在 submit 函数内部触发对 rules 的验证
 	name:{
 		rules:[
 			// 校验 name 不能为空
@@ -112,10 +109,10 @@ const submit = async()=>{//使用 async/await 处理异步验证
 		await formRef.value.validate();// 触发表单验证（formRef.value.validate() 触发所有字段的验证）
 		//validate是uni-forms 组件内置的验证方法
 		let file = await uploadFile();//上传图片到云端的按钮处理
-		formData.value.picurl = cloudToHttps(file.fileID);
+		formData.value.picurl = cloudToHttps(file.fileID);//将上传到云端的图片路径转换为https格式
 		// 上传成功后释放内存
-    	if (formData.value.tempurl) {
-      		URL.revokeObjectURL(formData.value.tempurl);
+    	if (formData.value.tempurl) {//如果有临时图片路径
+      		URL.revokeObjectURL(formData.value.tempurl);//释放内存，避免内存泄漏
     	}
 		
 		let {tempurl,...params} = formData.value;// 从 formData.value 中解构出 tempurl 字段,也就是剥离出来tempurl 字段，将剩余字段赋值给 params
@@ -124,15 +121,16 @@ const submit = async()=>{//使用 async/await 处理异步验证
 		showToast({title:"添加成功"});//添加成功后，显示toast提示
 		close();//添加成功后，关闭弹窗
 		init();//添加成功后，初始化(删除旧数据)分类表单数据
+		emits("success",{msg:"添加成功~~"});//触发success事件，通知父组件刷新数据
 	}catch(err){
 		console.log(err); //捕获验证失败的错误
-		showToast({title:err});
-	}finally{
-		uni.hideLoading();
+		showToast({title:err});//显示toast提示
+	}finally{//无论try块是否有异常，finally块都会执行
+		uni.hideLoading();//隐藏加载的动态图
 	}
 }
-//上传图片到云端
-const uploadFile = async()=>{
+
+const uploadFile = async()=>{//上传图片到云端
 	let tempurl = await convertBlobUrlToWebP(formData.value.tempurl);//将blob URL 格式的图像转换为 WebP 格式
 	return await uniCloud.uploadFile({//将压缩后的图片上传到云端
 		filePath: tempurl,//将压缩后的图片上传到云端
@@ -251,10 +249,10 @@ defineExpose({
 				// 图标样式
 				.icon{
 					flex: 1;//等比例分配空间，每个图标占等份
-					height: 100%;
+					height: 100%;//图标高度占满父容器
 					display: flex;
-					align-items: center;
-					justify-content: center;
+					align-items: center;//垂直居中对齐
+					justify-content: center;//水平居中对齐
 					cursor: pointer;//小手
 					
 				}
