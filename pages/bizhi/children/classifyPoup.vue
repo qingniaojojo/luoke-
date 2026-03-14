@@ -61,7 +61,7 @@
 </template>
 
 <script setup>
-import { ref, onUnmounted, vShow } from 'vue';
+import { ref, onUnmounted} from 'vue';
 import {cloudToHttps,convertBlobUrlToWebP} from "@/utils/tools.js";//用来导入压缩图片功能的云函数的方法
 import dayjs from "dayjs";//导入dayjs
 import { showToast } from '../../../utils/common';
@@ -120,9 +120,10 @@ const submit = async()=>{//使用 async/await 处理异步验证
 		
 		let {tempurl,...params} = formData.value;// 从 formData.value 中解构出 tempurl 字段,也就是剥离出来tempurl 字段，将剩余字段赋值给 params
 		let {errCode,errMsg} = await classifyCloundObj.add(params);//调用云数据库对象的add方法，将想要新增的数据添加到云数据库中，等待操作完成后将结果赋值给变量res。
-		if(errCode!==0) return showToast({title:errMsg});
-		showToast({title:"添加成功"});
-		close();//添加成功后让框自动消失
+		if(errCode!==0) return showToast({title:errMsg});//如果errCode不等于0，说明添加失败，返回错误信息
+		showToast({title:"添加成功"});//添加成功后，显示toast提示
+		close();//添加成功后，关闭弹窗
+		init();//添加成功后，初始化(删除旧数据)分类表单数据
 	}catch(err){
 		console.log(err); //捕获验证失败的错误
 		showToast({title:err});
@@ -133,14 +134,14 @@ const submit = async()=>{//使用 async/await 处理异步验证
 //上传图片到云端
 const uploadFile = async()=>{
 	let tempurl = await convertBlobUrlToWebP(formData.value.tempurl);//将blob URL 格式的图像转换为 WebP 格式
-	return await uniCloud.uploadFile({//
+	return await uniCloud.uploadFile({//将压缩后的图片上传到云端
 		filePath: tempurl,//将压缩后的图片上传到云端
 		cloudPath:"wallpaper/"+dayjs().format("YYYYMMDD")+"/"+Date.now()+".jpg"//云端地址
 	})
 }
 
 // 选择图片函数，调用uniapp的图片选择API
-const selectPicurl = ()=>{
+const selectPicurl = ()=>{//()=>{}等同于function(){}
 	uni.chooseImage({
 		count:1,// 最多选择1张图片
 		success:res=>{
@@ -151,7 +152,7 @@ const selectPicurl = ()=>{
 const delImg = ()=>{
 	// 删除图片时释放内存
   	if (formData.value.tempurl) {
-    	URL.revokeObjectURL(formData.value.tempurl);
+    	URL.revokeObjectURL(formData.value.tempurl);//释放内存，避免内存泄漏
   	}
 	formData.value.tempurl = ''// 清空临时图片路径，隐藏图片预览
 }
@@ -173,9 +174,20 @@ const open =()=>{
 const close = ()=>{
 	// 关闭弹窗前释放内存
   	if (formData.value.tempurl) {
-    	URL.revokeObjectURL(formData.value.tempurl);
+    	URL.revokeObjectURL(formData.value.tempurl);//释放内存，避免内存泄漏
   	}
-	ClassifyPopup.value.close();
+	ClassifyPopup.value.close();//关闭弹窗
+}
+
+const init =()=>{//初始化分类表单数据
+	formData.value = {
+		name:"",
+		sort:0,// 排序值，数字越大越靠前
+		select:false,
+		enable:false,
+		picurl: "",// 图片上传后的云存储URL
+		tempurl:""// 图片临时路径，用于预览
+	}
 }
 
 //暴露open方法
@@ -206,7 +218,7 @@ defineExpose({
 	.picGroup{
 		.box{
 			width: 80px;
-			aspect-ratio: 9 / 16;//9比16的比例设置
+			aspect-ratio: 1 / 1;//9比16的比例设置
 			border: 1px solid #e4e4e4;
 			border-radius: 10px;
 			overflow: hidden;//超出隐藏

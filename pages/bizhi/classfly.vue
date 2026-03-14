@@ -33,21 +33,22 @@
 
 				
 				<!-- 表格数据行 -->
-				<uni-tr v-for="item in 5">
+				<uni-tr v-for="item in classData" :key = "item_id"><!-- 为什么是item_什么 -->
 					<uni-td>
-						<image class="thumb" src="../../static/logo.png" mode="aspectFill"></image>
+						<image class="thumb" :src="item.picurl" mode="aspectFill"></image>
 					</uni-td>
 					<uni-td>
-						属性
+						{{item.name}}
 					</uni-td>
 					<uni-td>
-						1
+						{{item.sort}}
 					</uni-td>
 					<uni-td>
-						<uni-tag inverted text="推荐" type="error" />
+						<uni-tag v-if="item.select"  text="推荐" inverted type="error" />
+						<uni-tag v-else text="普通" inverted/>
 					</uni-td>
 					<uni-td>
-						<switch style="transform:scale(0.6);transform-origin: left center;" />
+						<switch :checked="item.enable" style="transform:scale(0.6);transform-origin: left center;" />
 					</uni-td>
 					<uni-td>
 						<view class="operate-btn-group">
@@ -63,7 +64,7 @@
 		
 
 		<view class="paging">
-			<uni-pagination title="标题文字" show-icon="true" total="50" current="2"></uni-pagination>
+			<!-- <uni-pagination title="标题文字" show-icon="true" total="3" current="2"></uni-pagination>-->
 		</view>
 
 		<classifyPopup ref="classPopRef"> </classifyPopup><!-- 被封装的弹窗调用 -->
@@ -74,13 +75,23 @@
 <script setup>
 import { ref } from "vue";
 import classifyPopup from "./children/classifyPoup.vue"
+import { showToast } from "../../utils/common";
+const classifyCloudObj = uniCloud.importObject("admin-bizhi-classify")//拿取云对象
 const classPopRef = ref(null);
+const classData = ref([]);
 // 点击新增分类按钮时调用，打开弹窗。为了在父组件中调用子组件
 const handleAPP = ()=>{
 	classPopRef.value.open();
 }
 
-	
+const getClassify = async()=>{
+	let {errCode,errMsg,data} = await classifyCloudObj.list();
+	if(errCode!==0) return showToast({title:errMsg});
+	classData.value = data;
+	console.log(data);
+}
+
+getClassify();	
 </script>
 
 <style lang="scss" scoped>
@@ -89,8 +100,8 @@ const handleAPP = ()=>{
 .main{
 	padding: 10px;
 	.thumb{
-		width: 45px;
-		height: 90px;
+		width: 70px;
+		height: 70px;
 		border-radius: 3px;
 		overflow: hidden;
 		
