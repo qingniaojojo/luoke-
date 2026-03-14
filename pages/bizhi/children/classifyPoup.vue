@@ -61,10 +61,11 @@
 </template>
 
 <script setup>
-import { ref, onUnmounted } from 'vue';
-import {cloudToHttps,convertBlobUrlToWebP} from "@/utils/tools.js";
+import { ref, onUnmounted, vShow } from 'vue';
+import {cloudToHttps,convertBlobUrlToWebP} from "@/utils/tools.js";//用来导入压缩图片功能的云函数的方法
 import dayjs from "dayjs";//导入dayjs
-const classifyCloundObj = uniCloud.importObject("admin-bizhi-classify");
+import { showToast } from '../../../utils/common';
+const classifyCloundObj = uniCloud.importObject("admin-bizhi-classify",{customUI:true});//导入云函数对象，用于调用云函数.{customUI:true}关闭云对象的loading加载
 onUnmounted(() => {
   // 组件卸载时释放内存，避免内存泄漏
   if (formData.value.tempurl) {
@@ -107,6 +108,7 @@ const rules = ref({
 })
 const submit = async()=>{//使用 async/await 处理异步验证
 	try{//验证通过执行 try 块，失败执行 catch 块。
+		uni.showLoading({mask:true})//加载的动态图，确保在没有上传完，不能对页面进行任何操作
 		await formRef.value.validate();// 触发表单验证（formRef.value.validate() 触发所有字段的验证）
 		//validate是uni-forms 组件内置的验证方法
 		let file = await uploadFile();//上传图片到云端的按钮处理
@@ -115,11 +117,17 @@ const submit = async()=>{//使用 async/await 处理异步验证
     	if (formData.value.tempurl) {
       		URL.revokeObjectURL(formData.value.tempurl);
     	}
+		
 		let {tempurl,...params} = formData.value;// 从 formData.value 中解构出 tempurl 字段,也就是剥离出来tempurl 字段，将剩余字段赋值给 params
-		let res = await classifyCloundObj.add(params);//调用云数据库对象的add方法，将想要新增的数据添加到云数据库中，等待操作完成后将结果赋值给变量res。
-		console.log(params);//打印formData.value，查看上传的图片路径是否正确赋值
+		let {errCode,errMsg} = await classifyCloundObj.add(params);//调用云数据库对象的add方法，将想要新增的数据添加到云数据库中，等待操作完成后将结果赋值给变量res。
+		if(errCode!==0) return showToast({title:errMsg});
+		showToast({title:"添加成功"});
+		close();//添加成功后让框自动消失
 	}catch(err){
 		console.log(err); //捕获验证失败的错误
+		showToast({title:err});
+	}finally{
+		uni.hideLoading();
 	}
 }
 //上传图片到云端
