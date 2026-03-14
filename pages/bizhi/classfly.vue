@@ -33,7 +33,7 @@
 
 				
 				<!-- 表格数据行 -->
-				<uni-tr v-for="item in classData" :key = "item_id"><!-- 为什么是item_什么 -->
+				<uni-tr v-for="item in classData" :key = "item._id"><!-- 为什么是item_什么 -->
 					<uni-td>
 						<image class="thumb" :src="item.picurl" mode="aspectFill"></image>
 					</uni-td>
@@ -53,7 +53,7 @@
 					<uni-td>
 						<view class="operate-btn-group">
 							<button size="mini" type="primary" plain>修改</button>
-							<button size="mini" type="warn" plain>删除</button>
+							<button size="mini" type="warn" plain @click="remove(item._id)">删除</button><!-- 删除按钮点击时调用remove函数，传入分类id,item._id是分类id -->
 						</view>
 					</uni-td>
 
@@ -76,7 +76,7 @@
 <script setup>
 import { ref } from "vue";//引入vue的ref函数
 import classifyPopup from "./children/classifyPoup.vue"//引入新增分类弹窗组件
-import { showToast } from "../../utils/common";//引入提示函数
+import { showModal,showToast } from "../../utils/common";//引入提示函数
 const classifyCloudObj = uniCloud.importObject("admin-bizhi-classify")//拿取云对象
 const classPopRef = ref(null);//新增分类弹窗引用
 const classData = ref([]);//分类列表数据
@@ -92,6 +92,19 @@ const getClassify = async()=>{//获取分类列表
 	console.log(data);
 }
 
+//删除一条分类
+const remove = async(id)=>{
+	try{
+		let feedback = await showModal({content:"是否确认删除？"})
+		if(feedback!=='confirm') return showToast({title:"删除取消"});//如果用户点击了取消按钮，提示删除取消
+		let {errCode,errMsg} = await classifyCloudObj.remove([id]);//调用云函数remove删除分类
+		if(errCode!==0) showToast({title:errMsg});//如果删除分类失败，提示错误信息
+		showToast({title:"删除成功"});//如果删除分类成功，提示删除成功
+		getClassify();//刷新分类列表
+	}catch(err){
+		console.log(err);
+	}
+}
 getClassify();	
 </script>
 
