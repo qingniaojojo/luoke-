@@ -50,7 +50,7 @@
 						<!-- 操作按钮组 -->
 					<uni-forms-item label="" name="sort">
 						<view class="group">
-							<button size="mini" type="primary" @click="submit">确认</button>
+							<button size="mini" type="primary" @click="submit">{{typename}}</button>
 							<button size="mini" type="default" @click="close">取消</button>
 						</view>
 					</uni-forms-item>
@@ -61,13 +61,14 @@
 </template>
 
 <script setup>
-import { ref, onUnmounted,watch} from 'vue';//引入ref，以及onUnmounted生命周期
+import { ref, onUnmounted,watch, computed} from 'vue';//引入ref，以及onUnmounted生命周期
 import {cloudToHttps,convertBlobUrlToWebP} from "@/utils/tools.js";//用来导入压缩图片功能的云函数的方法
 import dayjs from "dayjs";//导入dayjs
 import { showToast } from '../../../utils/common';
 const emits = defineEmits(["success"]);//常量起名emits，定义事件（名称success），用于子组件向父组件通信
-const props = defineProps(["item"]);//定义属性（名称item），用于父组件向子组件通信item对象
+const props = defineProps(["item","type"]);//定义属性（名称item），用于父组件向子组件通信item对象
 const classifyCloundObj = uniCloud.importObject("admin-bizhi-classify",{customUI:true});//导入云函数对象，用于调用云函数.{customUI:true}关闭云对象的loading加载
+const typename = computed(()=>props.type=='add'?'新增':'修改')
 onUnmounted(() => {
   if (formData.value.tempurl) {// 组件卸载时释放内存，避免内存泄漏
     URL.revokeObjectURL(formData.value.tempurl);
@@ -86,7 +87,7 @@ const formData = ref({
 	tempurl:""// 图片临时路径，用于预览
 })
 
-watch(()=>props.item, (nv) => {
+watch(()=>props.item, (nv) => {//监听props.item属性的变化，当props.item属性变化时，执行回调函数
    formData.value = {
 	...nv,//将获取到的分类详情赋值给formData属性
 	tempurl:nv.picurl//将获取到的分类详情的图片路径赋值给formData属性的tempurl字段
@@ -116,20 +117,22 @@ const submit = async()=>{//使用 async/await 处理异步验证
 		uni.showLoading({mask:true})//加载的动态图，确保在没有上传完，不能对页面进行任何操作
 		await formRef.value.validate();// 触发表单验证（formRef.value.validate() 触发所有字段的验证）
 		//validate是uni-forms 组件内置的验证方法
-		let file = await uploadFile();//上传图片到云端的按钮处理
-		formData.value.picurl = cloudToHttps(file.fileID);//将上传到云端的图片路径转换为https格式
 		// 上传成功后释放内存
-    	if (formData.value.tempurl) {//如果有临时图片路径
+    	if (formData.value.tempurl && formData.value.tempurl != formData.value.picurl){//如果有临时图片路径
+			let file = await uploadFile();//上传图片到云端的按钮处理
+			formData.value.picurl = cloudToHttps(file.fileID);//将上传到云端的图片路径转换为https格式
       		URL.revokeObjectURL(formData.value.tempurl);//释放内存，避免内存泄漏
     	}
 		
 		let {tempurl,...params} = formData.value;// 从 formData.value 中解构出 tempurl 字段,也就是剥离出来tempurl 字段，将剩余字段赋值给 params
-		let {errCode,errMsg} = await classifyCloundObj.add(params);//调用云数据库对象的add方法，将想要新增的数据添加到云数据库中，等待操作完成后将结果赋值给变量res。
+		let {errCode,errMsg} = props.type=='add' ? 
+		await classifyCloundObj.add(params) : 
+		await classifyCloundObj.update(params);//调用云数据库对象的add方法，将想要新增的数据添加到云数据库中，等待操作完成后将结果赋值给变量res。
 		if(errCode!==0) return showToast({title:errMsg});//如果errCode不等于0，说明添加失败，返回错误信息
-		showToast({title:"添加成功"});//添加成功后，显示toast提示
+		showToast({title:typename.value+"成功"});//添加成功后，显示toast提示
 		close();//添加成功后，关闭弹窗
 		init();//添加成功后，初始化(删除旧数据)分类表单数据
-		emits("success",{msg:"添加成功~~"});//触发success事件，通知父组件刷新数据
+		emits("success",{msg:typename.value+"成功~~"});//触发success事件，通知父组件刷新数据
 	}catch(err){
 		console.log(err); //捕获验证失败的错误
 		showToast({title:err});//显示toast提示
@@ -161,6 +164,7 @@ const delImg = ()=>{
     	URL.revokeObjectURL(formData.value.tempurl);//释放内存，避免内存泄漏
   	}
 	formData.value.tempurl = ''// 清空临时图片路径，隐藏图片预览
+	formData.value.picurl = ''
 }
 
 //是否推荐事件

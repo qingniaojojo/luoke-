@@ -10,10 +10,6 @@
 					<uni-icons type="plusempty" size="14" color="#fff"></uni-icons>
 					新增分类
 				</button>
-				<button type="warn" size="mini">
-					<uni-icons type="trash" size="14" color="#fff"></uni-icons>
-					批量删除
-				</button>
 			</template>
 		</custom-head-top>
 
@@ -67,7 +63,7 @@
 			<!-- <uni-pagination title="标题文字" show-icon="true" total="3" current="2"></uni-pagination>-->
 		</view>
 
-		<classifyPopup ref="classPopRef" :item="item" @success="getClassify()"> </classifyPopup><!-- 被封装的弹窗调用 新增分类弹窗成功后(触发success事件)，刷新分类列表(用getClassify())-->
+		<classifyPopup ref="classPopRef" :item="item" :type="type" @success="getClassify()"> </classifyPopup><!-- 被封装的弹窗调用 新增分类弹窗成功后(触发success事件)，刷新分类列表(用getClassify())-->
 
 
 	</view>
@@ -77,12 +73,14 @@
 import { ref } from "vue";//引入vue的ref函数
 import classifyPopup from "./children/classifyPoup.vue"//引入新增分类弹窗组件
 import { showModal,showToast } from "../../utils/common";//引入提示函数
-const classifyCloudObj = uniCloud.importObject("admin-bizhi-classify")//拿取云对象
+const classifyCloudObj = uniCloud.importObject("admin-bizhi-classify",{customUI:true})//拿取云对象
 const classPopRef = ref(null);//新增分类弹窗引用
 const item = ref({});//新增分类弹窗数据
 const classData = ref([]);//分类列表数据
+const type =ref("add");
 // 点击新增分类按钮时调用，打开弹窗。为了在父组件中调用子组件
 const handleAPP = ()=>{//新增分类
+	type.value = 'add';
 	classPopRef.value.open();//打开新增分类弹窗
 }
 
@@ -112,7 +110,8 @@ const update = async(id)=>{
 		let {data,errCode,errMsg} = await classifyCloudObj.item(id);
 		if(errCode!==0) return showToast({title:errMsg,showCancel:false});//如果获取分类详情失败，提示错误信息,showCancel:false表示不显示取消按钮
 		item.value = data;//将获取到的分类详情赋值给item属性
-		classPopRef.value.open(data);//打开新增分类弹窗，将获取到的分类详情赋值给弹窗的data属性
+		type.value = 'update';
+		classPopRef.value.open();//打开新增分类弹窗，将获取到的分类详情赋值给弹窗的data属性
 	}catch(err){
 		console.log(err);
 	}

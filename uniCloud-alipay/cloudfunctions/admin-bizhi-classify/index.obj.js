@@ -31,5 +31,12 @@ module.exports = {
 		return await dbJOL.collection("xxm-bizhi-classify").doc(id)//指定要查询的文档ID
 		.field("_id,name,select,sort,enable,picurl")//指定查询字段,避免返回所有字段
 		.get({getOne:true})//查询单条记录,返回一个对象
+	},
+	async update(params={}){
+		let {_id,...data} = params;
+		const dbJOL = uniCloud.databaseForJQL({//创建一个JQL数据库对象,用于执行JQL更新
+			clientInfo:this.getClientInfo()
+	})
+		return await dbJOL.collection("xxm-bizhi-classify").doc(_id).update({...data,createTime:Date.now()})
 	}
 }
