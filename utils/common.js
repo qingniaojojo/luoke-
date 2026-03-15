@@ -1,5 +1,5 @@
 export function showToast({title="",duration=1500,icon="none",mask=false}={}){//显示toast提示自己定义的 showToast 函数
-	uni.showToast({//UniApp内置的uni.showToast API
+	uni.showToast({//UniApp内置的uni.showToast API，用于显示toast提示
 		title:String(title),//将title转换为字符串
 		icon,//图标
 		duration,//持续时间
@@ -9,7 +9,7 @@ export function showToast({title="",duration=1500,icon="none",mask=false}={}){//
 
 export function showModal({content="",showCancel=true}={}){//显示模态弹窗,content="提示内容",showCancel=true显示取消按钮
 	return new Promise((resolve,reject)=>{
-		uni.showModal({//UniApp内置的uni.showModal API
+		uni.showModal({//UniApp内置的uni.showModal API，用于显示模态弹窗
 			title:"提示",//弹窗标题
 			content,//提示内容
 			showCancel,//是否显示取消按钮

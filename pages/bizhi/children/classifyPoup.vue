@@ -40,12 +40,12 @@
 					</uni-forms-item>
 						<!-- 是否推荐开关 -->
 					<uni-forms-item label="是否推荐" name="select">
-						<switch v-model="formData.select" style="transform:scale(0.6);transform-origin: left center;" @change="selectChange"/>
+						<switch v-model="formData.select" :checked="formData.select" style="transform:scale(0.6);transform-origin: left center;" @change="selectChange"/>
 						<!-- "selectChange"和"enableChange"监听 switch 组件的状态变化事件 -->
 					</uni-forms-item>
 						<!-- 是否启用开关 -->
 					<uni-forms-item label="是否启用" name="enable">
-						<switch v-model="formData.enable" style="transform:scale(0.6);transform-origin: left center;" @change="enableChange"/>
+						<switch v-model="formData.enable" :checked="formData.enable" style="transform:scale(0.6);transform-origin: left center;" @change="enableChange"/>
 					</uni-forms-item>
 						<!-- 操作按钮组 -->
 					<uni-forms-item label="" name="sort">
@@ -61,11 +61,12 @@
 </template>
 
 <script setup>
-import { ref, onUnmounted} from 'vue';//引入ref，以及onUnmounted生命周期
+import { ref, onUnmounted,watch} from 'vue';//引入ref，以及onUnmounted生命周期
 import {cloudToHttps,convertBlobUrlToWebP} from "@/utils/tools.js";//用来导入压缩图片功能的云函数的方法
 import dayjs from "dayjs";//导入dayjs
 import { showToast } from '../../../utils/common';
 const emits = defineEmits(["success"]);//常量起名emits，定义事件（名称success），用于子组件向父组件通信
+const props = defineProps(["item"]);//定义属性（名称item），用于父组件向子组件通信item对象
 const classifyCloundObj = uniCloud.importObject("admin-bizhi-classify",{customUI:true});//导入云函数对象，用于调用云函数.{customUI:true}关闭云对象的loading加载
 onUnmounted(() => {
   if (formData.value.tempurl) {// 组件卸载时释放内存，避免内存泄漏
@@ -84,6 +85,13 @@ const formData = ref({
 	picurl: "",// 图片上传后的云存储URL
 	tempurl:""// 图片临时路径，用于预览
 })
+
+watch(()=>props.item, (nv) => {
+   formData.value = {
+	...nv,//将获取到的分类详情赋值给formData属性
+	tempurl:nv.picurl//将获取到的分类详情的图片路径赋值给formData属性的tempurl字段
+};//将获取到的分类详情赋值给formData属性
+});
 
 const rules = ref({//校验规则必须写名字  先执行 submit 函数，然后在 submit 函数内部触发对 rules 的验证
 	name:{
@@ -175,6 +183,7 @@ const close = ()=>{
     	URL.revokeObjectURL(formData.value.tempurl);//释放内存，避免内存泄漏
   	}
 	ClassifyPopup.value.close();//关闭弹窗
+	init();
 }
 
 const init =()=>{//初始化分类表单数据
