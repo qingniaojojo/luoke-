@@ -44,7 +44,7 @@
 						<uni-tag v-else text="普通" inverted/>
 					</uni-td>
 					<uni-td>
-						<switch :checked="item.enable" style="transform:scale(0.6);transform-origin: left center;" />
+						<switch :checked="item.enable" style="transform:scale(0.6);transform-origin: left center;" @change="enableChange($event,item._id)"/>
 					</uni-td>
 					<uni-td>
 						<view class="operate-btn-group">
@@ -63,7 +63,7 @@
 			<!-- <uni-pagination title="标题文字" show-icon="true" total="3" current="2"></uni-pagination>-->
 		</view>
 
-		<classifyPopup ref="classPopRef" :item="item" :type="type" @success="getClassify()"> </classifyPopup><!-- 被封装的弹窗调用 新增分类弹窗成功后(触发success事件)，刷新分类列表(用getClassify())-->
+		<classifyPopup ref="classPopRef" :item="item" :type="type" @success="getClassify()" :maxSort= "classData[classData.length-1]?.sort"> </classifyPopup><!-- 被封装的弹窗调用 新增分类弹窗成功后(触发success事件)，刷新分类列表(用getClassify())-->
 
 
 	</view>
@@ -117,6 +117,22 @@ const update = async(id)=>{
 	}
 	
 }
+
+//修改启用状态
+const enableChange = async(e,id)=>{
+	try{
+		uni.showLoading({mask:true});
+		let {errCode,errMsg} =  await classifyCloudObj.update({_id:id,enable:e.detail.value});
+		if(errCode!==0) return showToast({title:errMsg});
+		getClassify();
+	}catch(err){
+		console.log(err);
+	}finally{
+		uni.hideLoading();
+	}
+	
+}
+
 getClassify();	
 </script>
 

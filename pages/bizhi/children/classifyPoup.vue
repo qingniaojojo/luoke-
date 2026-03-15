@@ -61,12 +61,12 @@
 </template>
 
 <script setup>
-import { ref, onUnmounted,watch, computed} from 'vue';//引入ref，以及onUnmounted生命周期
+import { ref, onUnmounted,watch, computed, nextTick} from 'vue';//引入ref，以及onUnmounted生命周期
 import {cloudToHttps,convertBlobUrlToWebP} from "@/utils/tools.js";//用来导入压缩图片功能的云函数的方法
 import dayjs from "dayjs";//导入dayjs
 import { showToast } from '../../../utils/common';
 const emits = defineEmits(["success"]);//常量起名emits，定义事件（名称success），用于子组件向父组件通信
-const props = defineProps(["item","type"]);//定义属性（名称item），用于父组件向子组件通信item对象
+const props = defineProps(["item","type","maxSort"]);//定义属性（名称item），用于父组件向子组件通信item对象
 const classifyCloundObj = uniCloud.importObject("admin-bizhi-classify",{customUI:true});//导入云函数对象，用于调用云函数.{customUI:true}关闭云对象的loading加载
 const typename = computed(()=>props.type=='add'?'新增':'修改')
 onUnmounted(() => {
@@ -178,6 +178,9 @@ const enableChange = (e)=>{
 
 //执行打开（open）方法
 const open =()=>{
+	nextTick(()=>{
+		if(props.type == 'add') formData.value.sort = props.maxSort+1
+	})
 	ClassifyPopup.value.open();
 }
 //取消新增。因为取消在组件里面所以不需要暴露close，只要调用调用打开弹窗，就可以用取消弹窗
