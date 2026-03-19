@@ -160,6 +160,18 @@
 	"style": {
 		"navigationBarTitleText": "分类管理"
 	}
+},
+{
+	"path": "pages/bizhi/piclist",
+	"style": {
+		"navigationBarTitleText": ""
+	}
+},
+{
+	"path": "pages/bizhi/picadd",
+	"style": {
+		"navigationBarTitleText": "新增宠物"
+	}
 }
 ],
 	"subPackages": [{

@@ -1,3 +1,5 @@
+import { type } from "../uni_modules/uni-forms/components/uni-forms/utils";
+
 export function showToast({title="",duration=1500,icon="none",mask=false}={}){//显示toast提示自己定义的 showToast 函数
 	uni.showToast({//UniApp内置的uni.showToast API，用于显示toast提示
 		title:String(title),//将title转换为字符串
@@ -22,4 +24,24 @@ export function showModal({content="",showCancel=true}={}){//显示模态弹窗,
 			}
 		})
 	})
+}
+
+//路由跳转方式
+export const routerTo = (url,type='navigate')=>{
+	if(type === "navigate"){
+		uni.navigateTo({
+			url
+		})
+	}else if(type==='redirect'){
+		uni.redirectTo({
+			url
+		})
+	}else if(type==='relaunch'){
+		uni.reLaunch({
+			url
+		})
+	}else{
+		return "错误信息"
+	}
+	
 }
