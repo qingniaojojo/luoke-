@@ -11,8 +11,37 @@
 			<view class="main">
 				<view class="grid">
 					<view class="itemBox pic" v-for="item in 7">
-						<view class="left">左图</view>
-						<view class="right">右文</view>
+						<view class="left">
+							<image src="/static/logo.png" mode="aspectFit"></image>
+							<view class="mask">
+								<!-- 编辑图标 -->
+								<view class="icon">
+									<uni-icons type="compose" size="20" color="#fff"></uni-icons>
+								</view>
+								<!-- 删除图标 -->
+								<view class="icon" @click="delImg">
+									<uni-icons type="trash" size="20" color="#fff"></uni-icons>
+								</view>
+							</view>
+						</view>
+						<view class="right">
+							<view class="row">
+								<view class="label">宠物描述</view>
+								<uni-easyinput type="textarea" placeholder="请输入宠物描述"></uni-easyinput>
+							</view>
+							<view class="row">
+								<view class="label">评分</view>
+								<uni-rate :touchable="false" allow-half :size="30"></uni-rate>
+							</view>
+							<view class="row">
+								<view class="label">标签</view>
+								<uni-easyinput placeholder="请输入标签"></uni-easyinput>
+								<view class="tabGroup">
+									<view class="tab">标签1</view>
+								</view>
+							</view>
+							
+						</view>
 					</view>
 					<view class="itemBox add">
 						<view class="icon">+</view>
@@ -47,7 +76,32 @@
 			.left{
 				width: 150px;
 				aspect-ratio: 9/20;
-				border: 1px solid green;
+				background: conic-gradient(#ccc 0 25%,#fff 25% 50%,#ccc 50% 75%,#fff 75%);
+				background-size: 15px 15px;
+				position: relative;//定位
+				image{
+					width: 100%;
+					height: 100%;
+				}
+				.mask{
+					position: absolute;//绝对定位，不占用文档流空间，不被元素遮挡
+					bottom: 0;//距离底部0像素
+					left: 0;
+					width: 100%;
+					height: 30px;
+					background: rgba(0,0,0,0.4);//最后的0.4是透明度，值越大小，透明度越低，显示越清晰。
+					display: flex;
+					align-items: center;
+					justify-content: center;
+					.icon{
+						display: flex;
+						height: 100%;
+						flex: 1;
+						align-items: center;
+						justify-content: center;
+						cursor: pointer;
+					}
+				}
 			}
 			.right{
 				flex: 1;
