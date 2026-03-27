@@ -5,12 +5,11 @@
 				<template #left>
 					新增宠物
 				</template>
-				
-				
 			</custom-head-top>
 			<view class="main">
 				<view class="grid">
-					<view class="itemBox pic" v-for="item in 7">
+					<view class="itemBox pic" v-for="item in piclist">
+						<view class="close">X</view>
 						<view class="left">
 							<image src="/static/logo.png" mode="aspectFit"></image>
 							<view class="mask">
@@ -40,22 +39,66 @@
 									<view class="tab">标签1</view>
 								</view>
 							</view>
+							<view class="BaseStatBox">
+								<view class="baseStat">
+									<view class="statItem">物攻:</view>
+									<uni-easyinput class="attValue" placeholder="物攻值"></uni-easyinput>
+								</view>
+								<view class="baseStat">
+									<view class="statItem">魔攻:</view>
+									<uni-easyinput class="attValue" placeholder="魔攻值"></uni-easyinput>
+								</view>
+								<view class="baseStat">
+									<view class="statItem">魔防:</view>
+									<uni-easyinput class="attValue" placeholder="魔防值"></uni-easyinput>
+								</view>
+								<view class="baseStat">
+									<view class="statItem">速度:</view>
+									<uni-easyinput class="attValue" placeholder="速度值"></uni-easyinput>
+								</view>
+								<view class="baseStat">
+									<view class="statItem">速度:</view>
+									<uni-easyinput class="attValue" placeholder="速度值"></uni-easyinput>
+								</view>
+							</view>
 							
 						</view>
 					</view>
-					<view class="itemBox add">
+					<view class="itemBox add" @click="handleSelect">
 						<view class="icon">+</view>
 						<view class="text">点击选择图片</view>
 					</view>
+					
 				</view>
+				
+				<view class="setClassify" v-if="piclist.length">
+					<uni-data-select></uni-data-select>
+				</view>
+				
+				<view class="btnGroup" v-if="piclist.length">
+					<button class="btn" type="primary">发布</button>
+					<button class="btn" type="warn" plain>清空</button>
+				</view>
+				
 			</view>
 		</view>
 	</view>
 </template>
 
+
 <script setup>
-	
+import {ref} from 'vue';
+
+const piclist = ref([]);//图片列表，用于存储用户选择的图片，临时存储以数组的方式存储
+const handleSelect = async()=>{
+	let imgs = await uni.chooseImage({
+		count: 6,
+	})
+	console.log(imgs);
+	piclist.value = imgs.tempFilePaths;
+}
 </script>
+
 
 <style lang="scss">
 .main{
@@ -72,6 +115,20 @@
 			display: flex;
 			align-items: start;
 			padding:20px;
+			position: relative;
+			.close{
+				position: absolute;
+				cursor: pointer;
+				right: 0;
+				top: 0;
+				width: 30px;
+				height: 30px;
+				background: #E43D33;
+				color: #FFF;
+				display: none;
+				align-items: center;
+				justify-content: center;
+			}
 			
 			.left{
 				width: 150px;
@@ -107,6 +164,29 @@
 				flex: 1;
 				border: 1px solid red;
 				margin-left: 20px;
+				.BaseStatBox{
+					border: 1px solid red;
+					display: grid;
+					align-items: center;
+					justify-content: center;
+					grid-template-columns: repeat(3,1fr);
+					gap: 2px;
+					width: 100%;
+					.baseStat{
+						display: flex;
+						font-size: 14px; 
+						align-items: center;
+						width: 100%;
+						.statItem{
+							flex: 0 0 32px;
+							margin-right: 5px;
+						}
+						.attValue{
+							margin-right: 10px;
+							flex: 0 0 75px;
+						}
+					}
+				}
 			}
 		}
 		.itemBox.pic{
@@ -130,7 +210,24 @@
 		}
 		.itemBox:hover{
 			border-color: #e4e4e4;
+			.close{
+				display: flex;
+			}
 		}
+	}
+	.setClassify{
+		padding: 30px 0;
+		width: 430px;
+	}
+	.btnGroup{
+		display: flex;
+		margin: 0;
+		button{
+			width: 150px;
+		}
+		button:first-child{
+		margin-right: 10px; /* 调整按钮之间的间距 */
+		}	
 	}
 }
 </style>

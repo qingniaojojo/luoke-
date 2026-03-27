@@ -60,6 +60,7 @@
 	</uni-popup>
 </template>
 
+
 <script setup>
 import { ref, onUnmounted,watch, computed, nextTick} from 'vue';//引入ref，以及onUnmounted生命周期
 import {cloudToHttps,convertBlobUrlToWebP} from "@/utils/tools.js";//用来导入压缩图片功能的云函数的方法
@@ -208,8 +209,6 @@ const init =()=>{//初始化分类表单数据
 defineExpose({
 	open
 })
-
-
 </script>
 
 
