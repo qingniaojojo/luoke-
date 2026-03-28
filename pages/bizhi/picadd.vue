@@ -8,7 +8,13 @@
 			</custom-head-top>
 			<view class="main">
 				<view class="setClassify" v-if="piclist.length">
-					<uni-data-select></uni-data-select>
+					<uni-data-select ref="selectRef" @change="classifyChange" collection ="xxm-bizhi-classify" 
+					field="_id as value, name as text,sort" 
+					:where='`enable == true`'
+					orderby="sort asc"
+					clear
+					v-model="selectvalue"
+					></uni-data-select>
 				</view>
 				<view class="grid">
 					<view class="itemBox pic" v-for="(item,index) in piclist" :key="index">
@@ -20,23 +26,16 @@
 								<view class="icon">
 									<uni-icons type="compose" size="20" color="#fff"></uni-icons>
 								</view>
-								<!-- 删除图标 -->
-								<view class="icon" @click="delImg">
-									<uni-icons type="trash" size="20" color="#fff"></uni-icons>
-								</view>
 							</view>
 						</view>
 						<view class="right">
 							<view class="row">
-								<view class="label">宠物特性</view>
-								<uni-easyinput v-model="item.description" type="textarea" placeholder="请输入宠物特性"></uni-easyinput>
+								<view class="label">名称</view>
+								<uni-easyinput placeholder="请输入标签"></uni-easyinput>
 							</view>
 							<view class="row">
-								<view class="label">标签</view>
-								<uni-easyinput placeholder="请输入标签"></uni-easyinput>
-								<view class="tabGroup">
-									<view class="tab">标签1</view>
-								</view>
+								<view class="label">宠物特性</view>
+								<uni-easyinput v-model="item.description" type="textarea" placeholder="请输入宠物特性"></uni-easyinput>
 							</view>
 							<view class="BaseStatBox">
 								<view class="baseStat">
@@ -71,11 +70,11 @@
 						<view class="icon">+</view>
 						<view class="text">点击选择图片</view>
 					</view>
-					
+					{{piclist}}
 				</view>
 				
 				<view class="btnGroup" v-if="piclist.length">
-					<button class="btn" type="primary">发布</button>
+					<button class="btn" type="primary" @click="subMit">发布</button>
 					<button class="btn" type="warn" plain @click="handleReset">清空</button>
 				</view>
 				
@@ -88,7 +87,8 @@
 <script setup>
 import {ref} from 'vue';
 import { showModal } from '../../utils/common';
-
+const selectvalue = ref("");
+const selectRef = ref(null);//用于清空分类选择
 const piclist = ref([]);//图片列表，用于存储用户选择的图片，临时存储以数组的方式存储
 const handleSelect = async()=>{
 	let imgs = await uni.chooseImage({
@@ -109,14 +109,23 @@ const handleClose = async(index)=>{
 	if(feedback == "confirm") piclist.value.splice(index,1);
 	
 }
+
 //清空所有
 const handleReset =async()=>{
 	let feedback = await showModal({content:"是否清空"});
 	if(feedback == "confirm") piclist.value=[];
 }
-//删除图片
-const delImg =()=>{
-	
+
+//提交
+const subMit=()=>{
+	selectRef.value.clearVal();//清空分类选择，clearVal是自带方法
+}
+
+//选择分类
+const classifyChange =(e)=>{
+	piclist.value.forEach(iteam=>{
+		iteam.classid =e
+	})
 }
 </script>
 
@@ -234,8 +243,8 @@ const delImg =()=>{
 		}
 	}
 	.setClassify{
-		padding: 10px 0;
-		width: 430px;
+		padding: 0 0 16px 0;
+		width: 200px;
 	}
 	.btnGroup{
 		display: flex;
