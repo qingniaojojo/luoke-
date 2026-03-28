@@ -7,11 +7,14 @@
 				</template>
 			</custom-head-top>
 			<view class="main">
+				<view class="setClassify" v-if="piclist.length">
+					<uni-data-select></uni-data-select>
+				</view>
 				<view class="grid">
-					<view class="itemBox pic" v-for="item in piclist">
-						<view class="close">X</view>
+					<view class="itemBox pic" v-for="(item,index) in piclist" :key="index">
+						<view class="close" @click="handleClose(index)">X</view>
 						<view class="left">
-							<image src="/static/logo.png" mode="aspectFit"></image>
+							<image :src="item.tempurl" mode="aspectFit"></image>
 							<view class="mask">
 								<!-- 编辑图标 -->
 								<view class="icon">
@@ -25,12 +28,8 @@
 						</view>
 						<view class="right">
 							<view class="row">
-								<view class="label">宠物描述</view>
-								<uni-easyinput type="textarea" placeholder="请输入宠物描述"></uni-easyinput>
-							</view>
-							<view class="row">
-								<view class="label">评分</view>
-								<uni-rate :touchable="false" allow-half :size="30"></uni-rate>
+								<view class="label">宠物特性</view>
+								<uni-easyinput v-model="item.description" type="textarea" placeholder="请输入宠物特性"></uni-easyinput>
 							</view>
 							<view class="row">
 								<view class="label">标签</view>
@@ -49,11 +48,15 @@
 									<uni-easyinput class="attValue" placeholder="魔攻值"></uni-easyinput>
 								</view>
 								<view class="baseStat">
-									<view class="statItem">魔防:</view>
+									<view class="statItem">物防:</view>
 									<uni-easyinput class="attValue" placeholder="魔防值"></uni-easyinput>
 								</view>
 								<view class="baseStat">
-									<view class="statItem">速度:</view>
+									<view class="statItem">魔防:</view>
+									<uni-easyinput class="attValue" placeholder="速度值"></uni-easyinput>
+								</view>
+								<view class="baseStat">
+									<view class="statItem">生命:</view>
 									<uni-easyinput class="attValue" placeholder="速度值"></uni-easyinput>
 								</view>
 								<view class="baseStat">
@@ -64,20 +67,16 @@
 							
 						</view>
 					</view>
-					<view class="itemBox add" @click="handleSelect">
+					<view class="itemBox add" @click="handleSelect" v-if="piclist.length<4">
 						<view class="icon">+</view>
 						<view class="text">点击选择图片</view>
 					</view>
 					
 				</view>
 				
-				<view class="setClassify" v-if="piclist.length">
-					<uni-data-select></uni-data-select>
-				</view>
-				
 				<view class="btnGroup" v-if="piclist.length">
 					<button class="btn" type="primary">发布</button>
-					<button class="btn" type="warn" plain>清空</button>
+					<button class="btn" type="warn" plain @click="handleReset">清空</button>
 				</view>
 				
 			</view>
@@ -88,14 +87,36 @@
 
 <script setup>
 import {ref} from 'vue';
+import { showModal } from '../../utils/common';
 
 const piclist = ref([]);//图片列表，用于存储用户选择的图片，临时存储以数组的方式存储
 const handleSelect = async()=>{
 	let imgs = await uni.chooseImage({
-		count: 6,
+		count: 4,
 	})
-	console.log(imgs);
-	piclist.value = imgs.tempFilePaths;
+	let obj = {
+			description:"",//宠物描述
+			picurl:"",//真实图片路径
+			tempurl:""//临时图片路径
+	}
+	piclist.value = [...piclist.value,...imgs.tempFilePaths.map(item=>({...obj,tempurl:item}))]//将用户选择的图片路径，添加到数组中,防止添加图片时把之前的图片覆盖
+	console.log(piclist.value);
+}
+
+//移除选择
+const handleClose = async(index)=>{
+	let feedback = await showModal({content:"是否删除"});
+	if(feedback == "confirm") piclist.value.splice(index,1);
+	
+}
+//清空所有
+const handleReset =async()=>{
+	let feedback = await showModal({content:"是否清空"});
+	if(feedback == "confirm") piclist.value=[];
+}
+//删除图片
+const delImg =()=>{
+	
 }
 </script>
 
@@ -114,7 +135,7 @@ const handleSelect = async()=>{
 			border:1px solid transparent;
 			display: flex;
 			align-items: start;
-			padding:20px;
+			padding:10px;
 			position: relative;
 			.close{
 				position: absolute;
@@ -131,8 +152,8 @@ const handleSelect = async()=>{
 			}
 			
 			.left{
-				width: 150px;
-				aspect-ratio: 9/20;
+				width: 140px;
+				aspect-ratio: 9/16;
 				background: conic-gradient(#ccc 0 25%,#fff 25% 50%,#ccc 50% 75%,#fff 75%);
 				background-size: 15px 15px;
 				position: relative;//定位
@@ -189,9 +210,6 @@ const handleSelect = async()=>{
 				}
 			}
 		}
-		.itemBox.pic{
-			
-		}
 		
 		.itemBox.add{
 			display: flex;
@@ -216,11 +234,12 @@ const handleSelect = async()=>{
 		}
 	}
 	.setClassify{
-		padding: 30px 0;
+		padding: 10px 0;
 		width: 430px;
 	}
 	.btnGroup{
 		display: flex;
+		padding: 10px 0;
 		margin: 0;
 		button{
 			width: 150px;
