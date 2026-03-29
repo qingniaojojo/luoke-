@@ -31,7 +31,17 @@
 						<view class="right">
 							<view class="row">
 								<view class="label">名称</view>
-								<uni-easyinput placeholder="请输入标签"></uni-easyinput>
+								<uni-easyinput placeholder="请输入名称"></uni-easyinput>
+							</view>
+							<view class="xlhfsx">
+								<view class="xbox">
+									<view class="xlhfsxName">序列号</view>
+									<uni-easyinput type="number"></uni-easyinput>
+								</view>
+								<view class="xbox">
+									<view class="xlhfsxName">副属性</view>
+									<uni-data-select ></uni-data-select>
+								</view>
 							</view>
 							<view class="row">
 								<view class="label">宠物特性</view>
@@ -86,7 +96,7 @@
 
 <script setup>
 import {ref} from 'vue';
-import { showModal } from '../../utils/common';
+import { showModal, showToast } from '../../utils/common';
 const selectvalue = ref("");
 const selectRef = ref(null);//用于清空分类选择
 const piclist = ref([]);//图片列表，用于存储用户选择的图片，临时存储以数组的方式存储
@@ -118,6 +128,10 @@ const handleReset =async()=>{
 
 //提交
 const subMit=()=>{
+	if(!selectvalue.value) return showToast({title:"分类必须选择"})
+	let desRes = piclist.value.every(item=>item.description)
+	if(!desRes) return showToast({title:"特性不能为空"})
+	//可以定义其他变量不能为空 
 	selectRef.value.clearVal();//清空分类选择，clearVal是自带方法
 }
 
@@ -192,10 +206,24 @@ const classifyChange =(e)=>{
 			}
 			.right{
 				flex: 1;
-				border: 1px solid red;
 				margin-left: 20px;
+				.xlhfsx{
+					display: grid;
+					align-items: center;
+					justify-content: center;
+					grid-template-columns: repeat(2,1fr);
+					gap: 10px;
+					width: 100%;
+					margin: 5px 0 5px 0;
+					.xbox{
+						display: flex;
+						font-size: 16px; 
+						align-items: center;
+						width: 100%;
+					}
+					
+				}
 				.BaseStatBox{
-					border: 1px solid red;
 					display: grid;
 					align-items: center;
 					justify-content: center;
