@@ -10,7 +10,7 @@
 				<view class="setClassify" v-if="piclist.length">
 					<uni-data-select ref="selectRef" @change="classifyChange" collection ="xxm-bizhi-classify" 
 					field="_id as value, name as text,sort" 
-					:where='`enable == true`'
+					:where='`enable == true && name!="无属性"`'
 					orderby="sort asc"
 					clear
 					v-model="selectvalue"
@@ -40,13 +40,13 @@
 								</view>
 								<view class="xbox">
 									<view class="xlhfsxName">副属性</view>
-									<uni-data-select ref="fsxRef" @change="fsxChange" collection ="xxm-bizhi-classify"
-									field="_id as value, name as text,sort"
-									:where ='`enable == true`'
-									orderby = "sort asc"
-									clear
-									v-model="fsxselect"
-									></uni-data-select>
+									<uni-data-select ref="fsxRef" @change="(val) => fsxChange(val, index)" collection ="xxm-bizhi-classify"
+												field="_id as value, name as text,sort"
+												:where ='`enable == true`'
+												orderby = "sort asc"
+												clear
+												v-model="item.fsxselect"
+												></uni-data-select>
 								</view>
 							</view>
 							<view class="row">
@@ -103,9 +103,7 @@
 <script setup>
 import {ref} from 'vue';
 import { showModal, showToast } from '../../utils/common';
-import config from '../../uni_modules/uni-id-pages/config';
 const selectvalue = ref("");
-const fsxselect = ref("");
 const selectRef = ref(null);//用于清空分类选择
 const fsxRef = ref(null);
 const piclist = ref([]);//图片列表，用于存储用户选择的图片，临时存储以数组的方式存储
@@ -115,9 +113,10 @@ const handleSelect = async()=>{
 			count: 4,
 		})
 		let obj = {
-				description:"",//宠物描述
-				picurl:"",//真实图片路径
-				tempurl:""//临时图片路径
+			description:"",//宠物描述
+			picurl:"",//真实图片路径
+			tempurl:"",//临时图片路径
+			fsxselect:""//副属性选择值
 		}
 		piclist.value = [...piclist.value,...imgs.tempFilePaths.map(item=>({...obj,tempurl:item}))]//将用户选择的图片路径，添加到数组中,防止添加图片时把之前的图片覆盖
 		console.log(piclist.value);
@@ -146,12 +145,19 @@ const handleReset =async()=>{
 //提交
 const subMit=()=>{
 	if(!selectvalue.value) return showToast({title:"分类必须选择"})
-	if(!fsxselect.value) return showToast({title:"副属性必须选择"})
+	// 检查每个图片是否都选择了副属性
+	const allHasFsx = piclist.value.every(item => item.Fsxid);
+	if(!allHasFsx) return showToast({title:"所有宠物的副属性必须选择"})
 	let desRes = piclist.value.every(item=>item.description)
 	if(!desRes) return showToast({title:"特性不能为空"})
 	//可以定义其他变量不能为空 
 	selectRef.value.clearVal();//清空分类选择，clearVal是自带方法
 	fsxRef.value.forEach(instance => instance.clearVal());// 直接处理数组情况，fsxRef 在 v-for 中使用
+	// 清空每个图片的副属性选择值
+	piclist.value.forEach(item => {
+		item.fsxselect = "";
+		item.Fsxid = "";//副属性id，用于提交时提交
+	});
 }
 
 //选择分类
@@ -160,10 +166,11 @@ const classifyChange =(e)=>{
 		iteam.classid =e
 	})
 }
-const fsxChange = (Fsx)=>{
-	piclist.value.forEach(iteam=>{
-		iteam.Fsxid =Fsx
-	})
+//选择副属性，将用户选择的副属性 ID 与对应的宠物数据关联，实现副属性选择的实时更新。
+const fsxChange = (val, index)=>{
+	if (piclist.value[index]) {
+		piclist.value[index].Fsxid = val;//副属性id,Fsx是用户选择的副属性id
+	}
 }
 </script>
 
