@@ -40,7 +40,13 @@
 								</view>
 								<view class="xbox">
 									<view class="xlhfsxName">副属性</view>
-									<uni-data-select ></uni-data-select>
+									<uni-data-select ref="fsxRef" @change="fsxChange" collection ="xxm-bizhi-classify"
+									field="_id as value, name as text,sort"
+									:where ='`enable == true`'
+									orderby = "sort asc"
+									clear
+									v-model="fsxselect"
+									></uni-data-select>
 								</view>
 							</view>
 							<view class="row">
@@ -97,20 +103,31 @@
 <script setup>
 import {ref} from 'vue';
 import { showModal, showToast } from '../../utils/common';
+import config from '../../uni_modules/uni-id-pages/config';
 const selectvalue = ref("");
+const fsxselect = ref("");
 const selectRef = ref(null);//用于清空分类选择
+const fsxRef = ref(null);
 const piclist = ref([]);//图片列表，用于存储用户选择的图片，临时存储以数组的方式存储
 const handleSelect = async()=>{
-	let imgs = await uni.chooseImage({
-		count: 4,
-	})
-	let obj = {
-			description:"",//宠物描述
-			picurl:"",//真实图片路径
-			tempurl:""//临时图片路径
+	try {
+		let imgs = await uni.chooseImage({
+			count: 4,
+		})
+		let obj = {
+				description:"",//宠物描述
+				picurl:"",//真实图片路径
+				tempurl:""//临时图片路径
+		}
+		piclist.value = [...piclist.value,...imgs.tempFilePaths.map(item=>({...obj,tempurl:item}))]//将用户选择的图片路径，添加到数组中,防止添加图片时把之前的图片覆盖
+		console.log(piclist.value);
+	} catch (error) {
+		// 捕获用户取消选择的错误，不做任何操作
+		if (error.errMsg !== 'chooseImage:fail cancel') {
+			// 其他错误可以在这里处理
+			console.error('选择图片失败:', error);
+		}
 	}
-	piclist.value = [...piclist.value,...imgs.tempFilePaths.map(item=>({...obj,tempurl:item}))]//将用户选择的图片路径，添加到数组中,防止添加图片时把之前的图片覆盖
-	console.log(piclist.value);
 }
 
 //移除选择
@@ -129,16 +146,23 @@ const handleReset =async()=>{
 //提交
 const subMit=()=>{
 	if(!selectvalue.value) return showToast({title:"分类必须选择"})
+	if(!fsxselect.value) return showToast({title:"副属性必须选择"})
 	let desRes = piclist.value.every(item=>item.description)
 	if(!desRes) return showToast({title:"特性不能为空"})
 	//可以定义其他变量不能为空 
 	selectRef.value.clearVal();//清空分类选择，clearVal是自带方法
+	fsxRef.value.forEach(instance => instance.clearVal());// 直接处理数组情况，fsxRef 在 v-for 中使用
 }
 
 //选择分类
 const classifyChange =(e)=>{
 	piclist.value.forEach(iteam=>{
 		iteam.classid =e
+	})
+}
+const fsxChange = (Fsx)=>{
+	piclist.value.forEach(iteam=>{
+		iteam.Fsxid =Fsx
 	})
 }
 </script>
