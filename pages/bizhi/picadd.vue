@@ -20,7 +20,7 @@
 					<view class="itemBox pic" v-for="(item,index) in piclist" :key="index">
 						<view class="close" @click="handleClose(index)">X</view>
 						<view class="left">
-							<image :src="item.tempurl" mode="aspectFit"></image>
+							<image :src="item.tempurl" mode="aspectFit"></image><!--aspectFit 保持图片比例，等比例缩放-->
 							<view class="mask">
 								<!-- 编辑图标 -->
 								<view class="icon">
@@ -36,22 +36,28 @@
 							<view class="xlhfsx">
 								<view class="xbox">
 									<view class="xlhfsxName">序列号</view>
-									<uni-easyinput type="number"></uni-easyinput>
+									<uni-easyinput type="number" placeholder="请输入序列号"></uni-easyinput>
 								</view>
 								<view class="xbox">
 									<view class="xlhfsxName">副属性</view>
 									<uni-data-select ref="fsxRef" @change="(val) => fsxChange(val, index)" collection ="xxm-bizhi-classify"
-												field="_id as value, name as text,sort"
-												:where ='`enable == true`'
-												orderby = "sort asc"
-												clear
-												v-model="item.fsxselect"
-												></uni-data-select>
+										field="_id as value, name as text,sort"
+										:where ='`enable == true`'
+										orderby = "sort asc"
+										clear
+										v-model="item.fsxselect"
+										></uni-data-select>
 								</view>
 							</view>
-							<view class="row">
-								<view class="label">宠物特性</view>
-								<uni-easyinput v-model="item.description" type="textarea" placeholder="请输入宠物特性"></uni-easyinput>
+							<view class="txBox">
+								<view class="txImg">
+									<view class="label">特性图片</view>
+									<image src="" mode="aspectFit"></image>
+								</view>
+								<view class="txImg">
+									<view class="label">宠物特性</view>
+									<uni-easyinput v-model="item.description" type="textarea" placeholder="请输入宠物特性"></uni-easyinput>
+								</view>
 							</view>
 							<view class="BaseStatBox">
 								<view class="baseStat">
@@ -64,15 +70,15 @@
 								</view>
 								<view class="baseStat">
 									<view class="statItem">物防:</view>
-									<uni-easyinput class="attValue" placeholder="魔防值"></uni-easyinput>
+									<uni-easyinput class="attValue" placeholder="物防值"></uni-easyinput>
 								</view>
 								<view class="baseStat">
 									<view class="statItem">魔防:</view>
-									<uni-easyinput class="attValue" placeholder="速度值"></uni-easyinput>
+									<uni-easyinput class="attValue" placeholder="魔防值"></uni-easyinput>
 								</view>
 								<view class="baseStat">
 									<view class="statItem">生命:</view>
-									<uni-easyinput class="attValue" placeholder="速度值"></uni-easyinput>
+									<uni-easyinput class="attValue" placeholder="生命值"></uni-easyinput>
 								</view>
 								<view class="baseStat">
 									<view class="statItem">速度:</view>
@@ -238,6 +244,20 @@ const fsxChange = (val, index)=>{
 			.right{
 				flex: 1;
 				margin-left: 20px;
+				.txBox{
+					display: grid;
+					grid-template-columns: 1fr 3fr;
+					.txImg{
+						&:first-child {
+							width: 67px;
+							image{
+								width: 50px;
+								height: 50px;
+								border: 1px solid #ccc;
+							}
+						}
+					}
+				}
 				.xlhfsx{
 					display: grid;
 					align-items: center;
@@ -294,7 +314,7 @@ const fsxChange = (val, index)=>{
 				padding-top: 20px;
 			}
 		}
-		.itemBox:hover{
+		.itemBox:hover{//鼠标悬停时，边框颜色变化，显示关闭按钮
 			border-color: #e4e4e4;
 			.close{
 				display: flex;
