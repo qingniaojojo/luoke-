@@ -52,7 +52,9 @@
 							<view class="txBox">
 								<view class="txImg">
 									<view class="label">特性图片</view>
-									<image src="" mode="aspectFit"></image>
+									<view class="selFsximg" @click="fsxImg(index)">
+										<image :src="item.fsximg || ''" mode="aspectFit"></image>
+									</view>
 								</view>
 								<view class="txImg">
 									<view class="label">宠物特性</view>
@@ -62,30 +64,29 @@
 							<view class="BaseStatBox">
 								<view class="baseStat">
 									<view class="statItem">物攻:</view>
-									<uni-easyinput class="attValue" placeholder="物攻值"></uni-easyinput>
+									<uni-easyinput v-model="item.p_at"  type="number" class="attValue" placeholder="物攻值"></uni-easyinput>
 								</view>
 								<view class="baseStat">
 									<view class="statItem">魔攻:</view>
-									<uni-easyinput class="attValue" placeholder="魔攻值"></uni-easyinput>
+									<uni-easyinput v-model="item.m_at" type="number" class="attValue" placeholder="魔攻值"></uni-easyinput>
 								</view>
 								<view class="baseStat">
 									<view class="statItem">物防:</view>
-									<uni-easyinput class="attValue" placeholder="物防值"></uni-easyinput>
+									<uni-easyinput v-model="item.p_def" type="number" class="attValue" placeholder="物防值"></uni-easyinput>
 								</view>
 								<view class="baseStat">
 									<view class="statItem">魔防:</view>
-									<uni-easyinput class="attValue" placeholder="魔防值"></uni-easyinput>
+									<uni-easyinput v-model="item.m_def" type="number" class="attValue" placeholder="魔防值"></uni-easyinput>
 								</view>
 								<view class="baseStat">
 									<view class="statItem">生命:</view>
-									<uni-easyinput class="attValue" placeholder="生命值"></uni-easyinput>
+									<uni-easyinput v-model="item.hp" type="number" class="attValue" placeholder="生命值"></uni-easyinput>
 								</view>
 								<view class="baseStat">
 									<view class="statItem">速度:</view>
-									<uni-easyinput class="attValue" placeholder="速度值"></uni-easyinput>
+									<uni-easyinput v-model="item.speed" type="number" class="attValue" placeholder="速度值"></uni-easyinput>
 								</view>
 							</view>
-							
 						</view>
 					</view>
 					<view class="itemBox add" @click="handleSelect" v-if="piclist.length<4">
@@ -118,12 +119,23 @@ const handleSelect = async()=>{
 		let imgs = await uni.chooseImage({
 			count: 4,
 		})
+		// 获取 tempFilePaths 数组
+    	console.log('临时路径数组:', imgs.tempFilePaths);
 		let obj = {
-			description:"",//宠物描述
-			picurl:"",//真实图片路径
-			tempurl:"",//临时图片路径
-			fsxselect:""//副属性选择值
-		}
+				description:"",//宠物描述
+				picurl:"",//真实图片路径
+				tempurl:"",//临时图片路径
+				fsxselect:"",//副属性选择值
+				fsximg:"",//特性图片路径
+				tefsximg:"",//特性图片永久路径
+				p_def:"",//物防
+				m_def:"",//魔防
+				hp:"",//生命
+				speed:"",//速度
+				p_at:"",//物攻
+				m_at:""//魔攻
+
+			}
 		piclist.value = [...piclist.value,...imgs.tempFilePaths.map(item=>({...obj,tempurl:item}))]//将用户选择的图片路径，添加到数组中,防止添加图片时把之前的图片覆盖
 		console.log(piclist.value);
 	} catch (error) {
@@ -176,6 +188,27 @@ const classifyChange =(e)=>{
 const fsxChange = (val, index)=>{
 	if (piclist.value[index]) {
 		piclist.value[index].Fsxid = val;//副属性id,Fsx是用户选择的副属性id
+	}
+}
+const fsxImg = async(index)=>{
+	try {
+		let imgs = await uni.chooseImage({
+			count: 1,
+		})
+		// 获取 tempFilePaths 数组
+    console.log('临时路径数组:', imgs.tempFilePaths);
+    
+    // 获取 tempFiles 数组（其他数组）
+    console.log('文件详细信息数组:', imgs.tempFiles);
+		if (piclist.value[index]) {
+			piclist.value[index].fsximg = imgs.tempFilePaths[0];
+		}
+	} catch (error) {
+		// 捕获用户取消选择的错误，不做任何操作
+		if (error.errMsg !== 'chooseImage:fail cancel') {
+			// 其他错误可以在这里处理
+			console.error('选择特性图片失败:', error);
+		}
 	}
 }
 </script>
@@ -247,6 +280,7 @@ const fsxChange = (val, index)=>{
 				.txBox{
 					display: grid;
 					grid-template-columns: 1fr 3fr;
+					margin-bottom: 10px;
 					.txImg{
 						&:first-child {
 							width: 67px;
