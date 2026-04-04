@@ -146,7 +146,7 @@ const uploadFile = async()=>{//上传图片到云端
 	let tempurl = await convertBlobUrlToWebP(formData.value.tempurl);//将blob URL 格式的图像转换为 WebP 格式
 	return await uniCloud.uploadFile({//将压缩后的图片上传到云端
 		filePath: tempurl,//将压缩后的图片上传到云端
-		cloudPath:"wallpaper/"+dayjs().format("YYYYMMDD")+"/"+Date.now()+".jpg"//云端地址
+		cloudPath:"wallpaper/"+dayjs().format("YYYYMMDD")+"/"+Date.now()+".webp"//云端地址
 	})
 }
 

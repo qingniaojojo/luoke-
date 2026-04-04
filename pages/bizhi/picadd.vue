@@ -49,42 +49,65 @@
 										></uni-data-select>
 								</view>
 							</view>
-							<view class="txBox">
-								<view class="txImg">
-									<view class="label">特性图片</view>
-									<view class="selFsximg" @click="fsxImg(index)">
-										<image :src="item.fsximg || ''" mode="aspectFit"></image>
+							<view class="txBigbox">
+								<view class="txBox">
+									<view class="txImg">
+										<view class="label">特性图片</view>
+										<view class="selFsximg" @click="txImg(index)">
+											<image :src="item.fsximg || ''" mode="aspectFit"></image>
+										</view>
+									</view>
+									<view class="txImg">
+										<view class="label">宠物特性</view>
+										<uni-easyinput v-model="item.description" type="textarea" placeholder="请输入宠物特性"></uni-easyinput>
 									</view>
 								</view>
-								<view class="txImg">
-									<view class="label">宠物特性</view>
-									<uni-easyinput v-model="item.description" type="textarea" placeholder="请输入宠物特性"></uni-easyinput>
+								<view class="BaseStatBox">
+									<view class="baseStat">
+										<view class="statItem">物攻:</view>
+										<uni-easyinput v-model="item.p_at"  type="number" class="attValue" placeholder="物攻值"></uni-easyinput>
+									</view>
+									<view class="baseStat">
+										<view class="statItem">魔攻:</view>
+										<uni-easyinput v-model="item.m_at" type="number" class="attValue" placeholder="魔攻值"></uni-easyinput>
+									</view>
+									<view class="baseStat">
+										<view class="statItem">物防:</view>
+										<uni-easyinput v-model="item.p_def" type="number" class="attValue" placeholder="物防值"></uni-easyinput>
+									</view>
+									<view class="baseStat">
+										<view class="statItem">魔防:</view>
+										<uni-easyinput v-model="item.m_def" type="number" class="attValue" placeholder="魔防值"></uni-easyinput>
+									</view>
+									<view class="baseStat">
+										<view class="statItem">生命:</view>
+										<uni-easyinput v-model="item.hp" type="number" class="attValue" placeholder="生命值"></uni-easyinput>
+									</view>
+									<view class="baseStat">
+										<view class="statItem">速度:</view>
+										<uni-easyinput v-model="item.speed" type="number" class="attValue" placeholder="速度值"></uni-easyinput>
+									</view>
 								</view>
 							</view>
-							<view class="BaseStatBox">
-								<view class="baseStat">
-									<view class="statItem">物攻:</view>
-									<uni-easyinput v-model="item.p_at"  type="number" class="attValue" placeholder="物攻值"></uni-easyinput>
-								</view>
-								<view class="baseStat">
-									<view class="statItem">魔攻:</view>
-									<uni-easyinput v-model="item.m_at" type="number" class="attValue" placeholder="魔攻值"></uni-easyinput>
-								</view>
-								<view class="baseStat">
-									<view class="statItem">物防:</view>
-									<uni-easyinput v-model="item.p_def" type="number" class="attValue" placeholder="物防值"></uni-easyinput>
-								</view>
-								<view class="baseStat">
-									<view class="statItem">魔防:</view>
-									<uni-easyinput v-model="item.m_def" type="number" class="attValue" placeholder="魔防值"></uni-easyinput>
-								</view>
-								<view class="baseStat">
-									<view class="statItem">生命:</view>
-									<uni-easyinput v-model="item.hp" type="number" class="attValue" placeholder="生命值"></uni-easyinput>
-								</view>
-								<view class="baseStat">
-									<view class="statItem">速度:</view>
-									<uni-easyinput v-model="item.speed" type="number" class="attValue" placeholder="速度值"></uni-easyinput>
+							<view class="skillBox"><!-- 技能选择区域 -->
+								<view class="skillTitle">技能配置</view>
+								<view class="skillItem">
+									<view class="skillNabox">
+										<view class="skillName">1</view>
+										<uni-easyinput v-model="item.skill1" type="number" placeholder="请输入技能1值"></uni-easyinput>
+									</view>
+									<view class="skillNabox">
+										<view class="skillName">2</view>
+										<uni-easyinput v-model="item.skill1" type="number" placeholder="请输入技能1值"></uni-easyinput>
+									</view>
+									<view class="skillNabox">
+										<view class="skillName">3</view>
+										<uni-easyinput v-model="item.skill1" type="number" placeholder="请输入技能1值"></uni-easyinput>
+									</view>
+									<view class="skillNabox">
+										<view class="skillName">4</view>
+										<uni-easyinput v-model="item.skill1" type="number" placeholder="请输入技能1值"></uni-easyinput>
+									</view>
 								</view>
 							</view>
 						</view>
@@ -110,6 +133,8 @@
 <script setup>
 import {ref} from 'vue';
 import { showModal, showToast } from '../../utils/common';
+import { cloudToHttps, convertBlobUrlToWebP } from '../../utils/tools';
+import dayjs from 'dayjs';
 const selectvalue = ref("");
 const selectRef = ref(null);//用于清空分类选择
 const fsxRef = ref(null);
@@ -123,11 +148,11 @@ const handleSelect = async()=>{
     	console.log('临时路径数组:', imgs.tempFilePaths);
 		let obj = {
 				description:"",//宠物描述
-				picurl:"",//真实图片路径
-				tempurl:"",//临时图片路径
+				picurl:"",//宠物真实图片路径
+				tempurl:"",//宠物临时图片路径
 				fsxselect:"",//副属性选择值
-				fsximg:"",//特性图片路径
-				tefsximg:"",//特性图片永久路径
+				tximg:"",//特性图临时片路径
+				txzimg:"",//特性图片真实路径
 				p_def:"",//物防
 				m_def:"",//魔防
 				hp:"",//生命
@@ -161,21 +186,52 @@ const handleReset =async()=>{
 }
 
 //提交
-const subMit=()=>{
+const subMit= async ()=>{
 	if(!selectvalue.value) return showToast({title:"分类必须选择"})
 	// 检查每个图片是否都选择了副属性
-	const allHasFsx = piclist.value.every(item => item.Fsxid);
-	if(!allHasFsx) return showToast({title:"所有宠物的副属性必须选择"})
+	if(!checkFsx()) return;
 	let desRes = piclist.value.every(item=>item.description)
 	if(!desRes) return showToast({title:"特性不能为空"})
+	// 等待所有图片上传完成
+	let uploudTass =  piclist.value.map((item,index)=>{
+		return uploadFile(item,index);
+	})
+	let cloudfiles = await Promise.all(uploudTass)
+	let params = piclist.value.map((item,index)=>{
+		let {tempurl,...rest} = item;
+		return{
+			...rest,
+			picurl:cloudToHttps(cloudfiles[index].fileID)// 图片上传后的云存储URL
+		}
+	})
+	
+	console.log(params);
 	//可以定义其他变量不能为空 
 	selectRef.value.clearVal();//清空分类选择，clearVal是自带方法
 	fsxRef.value.forEach(instance => instance.clearVal());// 直接处理数组情况，fsxRef 在 v-for 中使用
 	// 清空每个图片的副属性选择值
 	piclist.value.forEach(item => {
 		item.fsxselect = "";
-		item.Fsxid = "";//副属性id，用于提交时提交
+		item.Fsxid = "";//副属性id，用于提交
 	});
+}
+//检查每个图片是否都选择了副属性
+const checkFsx = () => {
+	const allHasFsx = piclist.value.every(item => item.Fsxid);
+	if(!allHasFsx) {
+		showToast({title:"所有宠物的副属性必须选择"})
+		return false;
+	}
+	return true;
+}
+
+const uploadFile = async (item,index)=>{
+	let tempurl = await convertBlobUrlToWebP(item.tempurl);
+	return uniCloud.uploadFile({
+		filePath:tempurl,
+		cloudPath:`wallpaper/${dayjs().format("YYYYMMDD")}/${Date.now}_${index}.webp`
+	})
+	item.picurl = tempurl;
 }
 
 //选择分类
@@ -190,7 +246,8 @@ const fsxChange = (val, index)=>{
 		piclist.value[index].Fsxid = val;//副属性id,Fsx是用户选择的副属性id
 	}
 }
-const fsxImg = async(index)=>{
+//选择特性图片
+const txImg = async(index)=>{
 	try {
 		let imgs = await uni.chooseImage({
 			count: 1,
@@ -277,6 +334,10 @@ const fsxImg = async(index)=>{
 			.right{
 				flex: 1;
 				margin-left: 20px;
+				.skillBox{
+					border: 1px solid #ccc;
+					padding: 5px;
+				}
 				.txBox{
 					display: grid;
 					grid-template-columns: 1fr 3fr;
