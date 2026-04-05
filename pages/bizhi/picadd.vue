@@ -31,12 +31,12 @@
 						<view class="right">
 							<view class="row">
 								<view class="label">名称</view>
-								<uni-easyinput placeholder="请输入名称"></uni-easyinput>
+								<uni-easyinput v-model="item.cwname" placeholder="请输入名称"></uni-easyinput>
 							</view>
 							<view class="xlhfsx">
 								<view class="xbox">
 									<view class="xlhfsxName">序列号</view>
-									<uni-easyinput type="number" placeholder="请输入序列号"></uni-easyinput>
+									<uni-easyinput v-model="item.sort" type="number" placeholder="请输入序列号"></uni-easyinput>
 								</view>
 								<view class="xbox">
 									<view class="xlhfsxName">副属性</view>
@@ -54,7 +54,7 @@
 									<view class="txImg">
 										<view class="label">特性图片</view>
 										<view class="selFsximg" @click="txImg(index)">
-											<image :src="item.fsximg || ''" mode="aspectFit"></image>
+											<image :src="item.tximg || ''" mode="aspectFit"></image>
 										</view>
 									</view>
 									<view class="txImg">
@@ -85,7 +85,7 @@
 									</view>
 									<view class="baseStat">
 										<view class="statItem">速度:</view>
-										<uni-easyinput v-model="item.speed" type="number" class="attValue" placeholder="速度值"></uni-easyinput>
+										<uni-easyinput v-model="item.spd" type="number" class="attValue" placeholder="速度值"></uni-easyinput>
 									</view>
 								</view>
 							</view>
@@ -147,6 +147,8 @@ const handleSelect = async()=>{
 		// 获取 tempFilePaths 数组
     	console.log('临时路径数组:', imgs.tempFilePaths);
 		let obj = {
+				cwname:"",//宠物名称
+				sort:"",//序列号
 				description:"",//宠物描述
 				picurl:"",//宠物真实图片路径
 				tempurl:"",//宠物临时图片路径
@@ -156,7 +158,7 @@ const handleSelect = async()=>{
 				p_def:"",//物防
 				m_def:"",//魔防
 				hp:"",//生命
-				speed:"",//速度
+				spd:"",//速度
 				p_at:"",//物攻
 				m_at:""//魔攻
 
@@ -193,15 +195,16 @@ const subMit= async ()=>{
 	let desRes = piclist.value.every(item=>item.description)
 	if(!desRes) return showToast({title:"特性不能为空"})
 	// 等待所有图片上传完成
-	let uploudTass =  piclist.value.map((item,index)=>{
-		return uploadFile(item,index);
-	})
-	let cloudfiles = await Promise.all(uploudTass)
+	let uploudTass =  piclist.value.map((item,index)=> uploadFile(item,index));
+	let Txuploud = piclist.value.map((item,index)=> txupload(item,index));
+	let cloudfiles = await Promise.all(uploudTass);
+	let txcloudfiles = await Promise.all(Txuploud);
 	let params = piclist.value.map((item,index)=>{
-		let {tempurl,...rest} = item;
+		let {tempurl, tximg, ...rest} = item;
 		return{
 			...rest,
-			picurl:cloudToHttps(cloudfiles[index].fileID)// 图片上传后的云存储URL
+			picurl: cloudToHttps(cloudfiles[index].fileID),
+			txzimg: cloudToHttps(txcloudfiles[index].fileID)
 		}
 	})
 	
@@ -231,7 +234,13 @@ const uploadFile = async (item,index)=>{
 		filePath:tempurl,
 		cloudPath:`wallpaper/${dayjs().format("YYYYMMDD")}/${Date.now}_${index}.webp`
 	})
-	item.picurl = tempurl;
+}
+const txupload = async (item,index)=>{
+	let tximg = await convertBlobUrlToWebP(item.tximg);
+	return uniCloud.uploadFile({
+		filePath:tximg,
+		cloudPath:`wallpaper/${dayjs().format("YYYYMMDD")}/${Date.now}_${index}.webp`
+	})
 }
 
 //选择分类
@@ -254,11 +263,8 @@ const txImg = async(index)=>{
 		})
 		// 获取 tempFilePaths 数组
     console.log('临时路径数组:', imgs.tempFilePaths);
-    
-    // 获取 tempFiles 数组（其他数组）
-    console.log('文件详细信息数组:', imgs.tempFiles);
 		if (piclist.value[index]) {
-			piclist.value[index].fsximg = imgs.tempFilePaths[0];
+			piclist.value[index].tximg = imgs.tempFilePaths[0];
 		}
 	} catch (error) {
 		// 捕获用户取消选择的错误，不做任何操作
