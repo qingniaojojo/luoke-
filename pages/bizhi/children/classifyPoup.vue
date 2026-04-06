@@ -124,7 +124,6 @@ const submit = async()=>{//使用 async/await 处理异步验证
 			formData.value.picurl = cloudToHttps(file.fileID);//将上传到云端的图片路径转换为https格式
       		URL.revokeObjectURL(formData.value.tempurl);//释放内存，避免内存泄漏
     	}
-		
 		let {tempurl,...params} = formData.value;// 从 formData.value 中解构出 tempurl 字段,也就是剥离出来tempurl 字段，将剩余字段赋值给 params
 		let {errCode,errMsg} = props.type=='add' ? 
 		await classifyCloundObj.add(params) : 

@@ -21,153 +21,72 @@
 				"$env": "uid"
 			}
 		},
-		"category_id": {
+		"classid": {
 			"bsonType": "string",
-			"title": "分类",
-			"description": "分类 id，参考`uni-news-categories`表",
-			"foreignKey": "opendb-news-categories._id",
-			"enum": {
-				"collection": "opendb-news-categories",
-				"field": "name as text, _id as value"
-			}
+			"title": "属性",
+			"description": "属性 id，参考`xxm-bizhi-classify`表",
+			"foreignKey": "xxm-bizhi-classify"
 		},
-		"title": {
+		"Fsxid": {
 			"bsonType": "string",
-			"title": "标题",
-			"description": "标题",
-			"label": "标题",
-			"trim": "both"
+			"title": "副属性",
+			"description": "副属性 id，参考`xxm-bizhi-classify`表",
+			"foreignKey": "xxm-bizhi-classify"
 		},
-		"content": {
+		"cwname": {
 			"bsonType": "string",
-			"title": "文章内容",
-			"description": "文章内容",
-			"label": "文章内容",
-			"trim": "right"
+			"description": "宠物名称",
+			"defaultValue":""
 		},
-		"excerpt": {
-			"bsonType": "string",
-			"title": "文章摘录",
-			"description": "文章摘录",
-			"label": "摘要",
-			"trim": "both"
-		},
-		"article_status": {
+		"sort": {
 			"bsonType": "int",
-			"title": "文章状态",
-			"description": "文章状态：0 草稿箱 1 已发布",
-			"defaultValue": 0,
-			"enum": [
-				{
-					"value": 0,
-					"text": "草稿箱"
-				},
-				{
-					"value": 1,
-					"text": "已发布"
-				}
-			]
+			"description": "类别显示顺序",
+			"label": "排序"
 		},
-		"view_count": {
-			"bsonType": "int",
-			"title": "阅读数量",
-			"description": "阅读数量",
-			"permission": {
-				"write": false
-			}
-		},
-		"like_count": {
-			"bsonType": "int",
-			"description": "喜欢数、点赞数",
-			"permission": {
-				"write": false
-			}
-		},
-		"is_sticky": {
-			"bsonType": "bool",
-			"title": "是否置顶",
-			"description": "是否置顶",
-			"permission": {
-				"write": false
-			}
-		},
-		"is_essence": {
-			"bsonType": "bool",
-			"title": "阅读加精",
-			"description": "阅读加精",
-			"permission": {
-				"write": false
-			}
-		},
-		"comment_status": {
-			"bsonType": "int",
-			"title": "开放评论",
-			"description": "评论状态：0 关闭  1 开放",
-			"enum": [
-				{
-					"value": 0,
-					"text": "关闭"
-				},
-				{
-					"value": 1,
-					"text": "开放"
-				}
-			]
-		},
-		"comment_count": {
-			"bsonType": "int",
-			"description": "评论数量",
-			"permission": {
-				"write": false
-			}
-		},
-		"last_comment_user_id": {
+		"description": {
 			"bsonType": "string",
-			"description": "最后回复用户 id，参考`uni-id-users` 表",
-			"foreignKey": "uni-id-users._id"
+			"description": "特性描述",
+			"defaultValue":""
 		},
-		"avatar": {
-			"bsonType": "string",
-			"title": "封面大图",
-			"description": "缩略图地址",
-			"label": "封面大图",
-			"trim": "both"
-		},
-		"publish_date": {
-			"bsonType": "timestamp",
-			"title": "发表时间",
-			"description": "发表时间",
-			"defaultValue": {
-				"$env": "now"
-			}
-		},
-		"publish_ip": {
-			"bsonType": "string",
-			"title": "发布文章时IP地址",
-			"description": "发表时 IP 地址",
-			"forceDefaultValue": {
-				"$env": "clientIP"
-			}
-		},
-		"last_modify_date": {
-			"bsonType": "timestamp",
-			"title": "最后修改时间",
-			"description": "最后修改时间",
-			"defaultValue": {
-				"$env": "now"
-			}
-		},
-		"last_modify_ip": {
-			"bsonType": "string",
-			"description": "最后修改时 IP 地址",
-			"forceDefaultValue": {
-				"$env": "clientIP"
-			}
-		},
-		"mode": {
+		"hp": {
 			"bsonType": "number",
-			"title": "排版显示模式",
-			"description": "排版显示模式,如左图右文、上图下文等"
+			"description": "生命"
+		},
+		"p_at": {
+			"bsonType": "number",
+			"description": "物理攻击值"
+		},
+		"m_at": {
+			"bsonType": "number",
+			"description": "魔法攻击值"
+		},
+		"p_def": {
+			"bsonType": "number",
+			"description": "物防值"
+		},
+		"m_def": {
+			"bsonType": "number",
+			"description": "魔防值"
+		},
+		"spd": {
+			"bsonType": "number",
+			"description": "速度值"
+		},
+		"picurl": {
+			"bsonType": "string",
+			"description": "宠物图地址"
+		},
+		"txzimg": {
+			"bsonType": "string",
+			"description": "特性图地址"
+		},
+		"createTime": {
+			"bsonType": "timestamp",
+			"title": "",
+			"description": "创建时间",
+			"defaultValue":{
+				"$env": "now"
+			}
 		}
 	},
 	"version": "0.0.1"

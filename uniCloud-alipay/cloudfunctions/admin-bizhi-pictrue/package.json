@@ -1,0 +1,7 @@
+{
+  "name": "admin-bizhi-pictrue",
+  "dependencies": {},
+  "extensions": {
+    "uni-cloud-jql": {}
+  }
+}

@@ -45,7 +45,7 @@
 										:where ='`enable == true`'
 										orderby = "sort asc"
 										clear
-										v-model="item.fsxselect"
+										v-model="item.Fsxid"
 										></uni-data-select>
 								</view>
 							</view>
@@ -139,20 +139,20 @@ const selectvalue = ref("");
 const selectRef = ref(null);//用于清空分类选择
 const fsxRef = ref(null);
 const piclist = ref([]);//图片列表，用于存储用户选择的图片，临时存储以数组的方式存储
+const picCloudObj = uniCloud.importObject("admin-bizhi-pictrue");
 const handleSelect = async()=>{
 	try {
 		let imgs = await uni.chooseImage({
 			count: 4,
 		})
 		// 获取 tempFilePaths 数组
-    	console.log('临时路径数组:', imgs.tempFilePaths);
 		let obj = {
 				cwname:"",//宠物名称
-				sort:"",//序列号
+				sort:0,//序列号
 				description:"",//宠物描述
 				picurl:"",//宠物真实图片路径
 				tempurl:"",//宠物临时图片路径
-				fsxselect:"",//副属性选择值
+				Fsxid:"",//副属性选择值
 				tximg:"",//特性图临时片路径
 				txzimg:"",//特性图片真实路径
 				p_def:"",//物防
@@ -164,7 +164,6 @@ const handleSelect = async()=>{
 
 			}
 		piclist.value = [...piclist.value,...imgs.tempFilePaths.map(item=>({...obj,tempurl:item}))]//将用户选择的图片路径，添加到数组中,防止添加图片时把之前的图片覆盖
-		console.log(piclist.value);
 	} catch (error) {
 		// 捕获用户取消选择的错误，不做任何操作
 		if (error.errMsg !== 'chooseImage:fail cancel') {
@@ -204,18 +203,36 @@ const subMit= async ()=>{
 		return{
 			...rest,
 			picurl: cloudToHttps(cloudfiles[index].fileID),
-			txzimg: cloudToHttps(txcloudfiles[index].fileID)
+			txzimg: cloudToHttps(txcloudfiles[index].fileID),
+			// 将字符串属性转换为数字
+			sort: Number(item.sort) || 0,
+			p_def: Number(item.p_def) || 0,
+			m_def: Number(item.m_def) || 0,
+			hp: Number(item.hp) || 0,
+			spd: Number(item.spd) || 0,
+			p_at: Number(item.p_at) || 0,
+			m_at: Number(item.m_at) || 0
 		}
 	})
 	
-	console.log(params);
+	let res = await picCloudObj.add(params)
+	console.log()
 	//可以定义其他变量不能为空 
-	selectRef.value.clearVal();//清空分类选择，clearVal是自带方法
-	fsxRef.value.forEach(instance => instance.clearVal());// 直接处理数组情况，fsxRef 在 v-for 中使用
+	if (selectRef.value) {
+		selectRef.value.clearVal();//清空分类选择，clearVal是自带方法
+	}
+	if (fsxRef.value && Array.isArray(fsxRef.value)) {
+		fsxRef.value.forEach(instance => {
+			if (instance) {
+				instance.clearVal();
+			}
+		});// 直接处理数组情况，fsxRef 在 v-for 中使用
+	}
 	// 清空每个图片的副属性选择值
 	piclist.value.forEach(item => {
-		item.fsxselect = "";
-		item.Fsxid = "";//副属性id，用于提交
+		if (item) {
+			item.Fsxid = "";//副属性id，用于提交
+		}
 	});
 }
 //检查每个图片是否都选择了副属性
@@ -229,17 +246,28 @@ const checkFsx = () => {
 }
 
 const uploadFile = async (item,index)=>{
-	let tempurl = await convertBlobUrlToWebP(item.tempurl);
-	return uniCloud.uploadFile({
-		filePath:tempurl,
-		cloudPath:`wallpaper/${dayjs().format("YYYYMMDD")}/${Date.now}_${index}.webp`
-	})
+	// 检查是否有主图片
+	if (!item.tempurl) {
+		// 如果没有主图片，返回一个包含默认 fileID 的对象
+		return Promise.resolve({ fileID: '' });
+	}
+	try {
+		let tempurl = await convertBlobUrlToWebP(item.tempurl);
+		return uniCloud.uploadFile({
+			filePath:tempurl,
+			cloudPath:`wallpaper/${dayjs().format("YYYYMMDD")}/${Date.now()}_${index}.webp`
+		});
+	} catch (error) {
+		console.error('主图片转换失败:', error);
+		// 转换失败时返回默认值
+		return Promise.resolve({ fileID: '' });
+	}
 }
 const txupload = async (item,index)=>{
 	let tximg = await convertBlobUrlToWebP(item.tximg);
 	return uniCloud.uploadFile({
 		filePath:tximg,
-		cloudPath:`wallpaper/${dayjs().format("YYYYMMDD")}/${Date.now}_${index}.webp`
+		cloudPath:`wallpaper/${dayjs().format("YYYYMMDD")}/tx_${Date.now()}_${index}.webp`
 	})
 }
 
@@ -262,7 +290,6 @@ const txImg = async(index)=>{
 			count: 1,
 		})
 		// 获取 tempFilePaths 数组
-    console.log('临时路径数组:', imgs.tempFilePaths);
 		if (piclist.value[index]) {
 			piclist.value[index].tximg = imgs.tempFilePaths[0];
 		}
