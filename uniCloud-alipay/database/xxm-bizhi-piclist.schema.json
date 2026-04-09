@@ -50,27 +50,33 @@
 		},
 		"hp": {
 			"bsonType": "number",
-			"description": "生命"
+			"description": "生命值",
+			"label": "生命"
 		},
 		"p_at": {
 			"bsonType": "number",
-			"description": "物理攻击值"
+			"description": "物理攻击值",
+			"label": "物击值"
 		},
 		"m_at": {
 			"bsonType": "number",
-			"description": "魔法攻击值"
+			"description": "魔法攻击值",
+			"label": "魔攻值"
 		},
 		"p_def": {
 			"bsonType": "number",
-			"description": "物防值"
+			"description": "物防值",
+			"label": "物防值"
 		},
 		"m_def": {
 			"bsonType": "number",
-			"description": "魔防值"
+			"description": "魔防值",
+			"label": "魔防值"
 		},
 		"spd": {
 			"bsonType": "number",
-			"description": "速度值"
+			"description": "速度值",
+			"label": "速度值"
 		},
 		"picurl": {
 			"bsonType": "string",

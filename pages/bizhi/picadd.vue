@@ -133,7 +133,7 @@
 <script setup>
 import {ref} from 'vue';
 import { showModal, showToast } from '../../utils/common';
-import { cloudToHttps, convertBlobUrlToWebP } from '../../utils/tools';
+import { cloudToHttps, convertBlobUrlToWebP } from '../../utils/tools';// 添加这一行
 import dayjs from 'dayjs';
 const selectvalue = ref("");
 const selectRef = ref(null);//用于清空分类选择
@@ -237,7 +237,7 @@ const subMit= async ()=>{
 }
 //检查每个图片是否都选择了副属性
 const checkFsx = () => {
-	const allHasFsx = piclist.value.every(item => item.Fsxid);
+	const allHasFsx = piclist.value.every(item => item.Fsxid);//检查每个图片是否都选择了副属性
 	if(!allHasFsx) {
 		showToast({title:"所有宠物的副属性必须选择"})
 		return false;
@@ -264,8 +264,8 @@ const uploadFile = async (item,index)=>{
 	}
 }
 const txupload = async (item,index)=>{
-	let tximg = await convertBlobUrlToWebP(item.tximg);
-	return uniCloud.uploadFile({
+	let tximg = await convertBlobUrlToWebP(item.tximg);//将特性图片转换为webp格式
+	return uniCloud.uploadFile({//上传特性图片
 		filePath:tximg,
 		cloudPath:`wallpaper/${dayjs().format("YYYYMMDD")}/tx_${Date.now()}_${index}.webp`
 	})
