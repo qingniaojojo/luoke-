@@ -98,15 +98,15 @@
 									</view>
 									<view class="skillNabox">
 										<view class="skillName">2</view>
-										<uni-easyinput v-model="item.skill1" type="number" placeholder="请输入技能1值"></uni-easyinput>
+										<uni-easyinput v-model="item.skill2" type="number" placeholder="请输入技能2值"></uni-easyinput>
 									</view>
 									<view class="skillNabox">
 										<view class="skillName">3</view>
-										<uni-easyinput v-model="item.skill1" type="number" placeholder="请输入技能1值"></uni-easyinput>
+										<uni-easyinput v-model="item.skill3" type="number" placeholder="请输入技能3值"></uni-easyinput>
 									</view>
 									<view class="skillNabox">
 										<view class="skillName">4</view>
-										<uni-easyinput v-model="item.skill1" type="number" placeholder="请输入技能1值"></uni-easyinput>
+										<uni-easyinput v-model="item.skill4" type="number" placeholder="请输入技能4值"></uni-easyinput>
 									</view>
 								</view>
 							</view>
@@ -116,14 +116,11 @@
 						<view class="icon">+</view>
 						<view class="text">点击选择图片</view>
 					</view>
-					{{piclist}}
 				</view>
-				
 				<view class="btnGroup" v-if="piclist.length">
 					<button class="btn" type="primary" @click="subMit">发布</button>
 					<button class="btn" type="warn" plain @click="handleReset">清空</button>
 				</view>
-				
 			</view>
 		</view>
 	</view>
@@ -132,9 +129,10 @@
 
 <script setup>
 import {ref} from 'vue';
-import { showModal, showToast } from '../../utils/common';
+import { routerTo, showModal, showToast } from '../../utils/common';
 import { cloudToHttps, convertBlobUrlToWebP } from '../../utils/tools';// 添加这一行
 import dayjs from 'dayjs';
+import error from '../../store/modules/error';
 const selectvalue = ref("");
 const selectRef = ref(null);//用于清空分类选择
 const fsxRef = ref(null);
@@ -193,47 +191,55 @@ const subMit= async ()=>{
 	if(!checkFsx()) return;
 	let desRes = piclist.value.every(item=>item.description)
 	if(!desRes) return showToast({title:"特性不能为空"})
-	// 等待所有图片上传完成
-	let uploudTass =  piclist.value.map((item,index)=> uploadFile(item,index));
-	let Txuploud = piclist.value.map((item,index)=> txupload(item,index));
-	let cloudfiles = await Promise.all(uploudTass);
-	let txcloudfiles = await Promise.all(Txuploud);
-	let params = piclist.value.map((item,index)=>{
-		let {tempurl, tximg, ...rest} = item;
-		return{
-			...rest,
-			picurl: cloudToHttps(cloudfiles[index].fileID),
-			txzimg: cloudToHttps(txcloudfiles[index].fileID),
-			// 将字符串属性转换为数字
-			sort: Number(item.sort) || 0,
-			p_def: Number(item.p_def) || 0,
-			m_def: Number(item.m_def) || 0,
-			hp: Number(item.hp) || 0,
-			spd: Number(item.spd) || 0,
-			p_at: Number(item.p_at) || 0,
-			m_at: Number(item.m_at) || 0
-		}
-	})
-	
-	let res = await picCloudObj.add(params)
-	console.log()
-	//可以定义其他变量不能为空 
-	if (selectRef.value) {
-		selectRef.value.clearVal();//清空分类选择，clearVal是自带方法
-	}
-	if (fsxRef.value && Array.isArray(fsxRef.value)) {
-		fsxRef.value.forEach(instance => {
-			if (instance) {
-				instance.clearVal();
+	try{
+		uni.showLoading({mask:true});
+		// 等待所有图片上传完成
+		let uploudTass =  piclist.value.map((item,index)=> uploadFile(item,index));
+		let Txuploud = piclist.value.map((item,index)=> txupload(item,index));
+		let cloudfiles = await Promise.all(uploudTass);
+		let txcloudfiles = await Promise.all(Txuploud);
+		let params = piclist.value.map((item,index)=>{
+			let {tempurl, tximg, ...rest} = item;
+			return{
+				...rest,
+				picurl: cloudToHttps(cloudfiles[index].fileID),
+				txzimg: cloudToHttps(txcloudfiles[index].fileID),
+				// 将字符串属性转换为数字
+				sort: Number(item.sort) || 0,
+				p_def: Number(item.p_def) || 0,
+				m_def: Number(item.m_def) || 0,
+				hp: Number(item.hp) || 0,
+				spd: Number(item.spd) || 0,
+				p_at: Number(item.p_at) || 0,
+				m_at: Number(item.m_at) || 0
 			}
-		});// 直接处理数组情况，fsxRef 在 v-for 中使用
-	}
-	// 清空每个图片的副属性选择值
-	piclist.value.forEach(item => {
-		if (item) {
-			item.Fsxid = "";//副属性id，用于提交
+		})
+		
+		let {errCode,errMsg} = await picCloudObj.add(params);
+		if(errCode!==0) return showToast({title:errMsg});
+		showToast({title:"发布成功"});
+		setTimeout(()=>routerTo("/pages/bizhi/piclist","redirect"),1500);
+		//可以定义其他变量不能为空 
+		if (selectRef.value) {
+			selectRef.value.clearVal();//清空分类选择，clearVal是自带方法
 		}
-	});
+		if (fsxRef.value && Array.isArray(fsxRef.value)) {
+			fsxRef.value.forEach(instance => {
+				if (instance) {
+					instance.clearVal();
+				}
+			});// 直接处理数组情况，fsxRef 在 v-for 中使用
+		}
+		// 清空每个图片的副属性选择值
+		piclist.value.forEach(item => {
+			if (item) {
+				item.Fsxid = "";//副属性id，用于提交
+			}
+		});
+	}catch(err){
+		showToast({title:err});
+		uni.hideHomeButton();
+	}
 }
 //检查每个图片是否都选择了副属性
 const checkFsx = () => {

@@ -8,5 +8,15 @@ module.exports = {
 			clientInfo:this.getClientInfo()
 		})
 		return await dbJOL.collection("xxm-bizhi-piclist").add(params);
+	},
+	async list(){
+		const dbJOL = uniCloud.databaseForJQL({//创建一个JQL数据库对象,用于执行JQL新增
+			clientInfo:this.getClientInfo()
+		})
+		let picTemp = dbJOL.collection("xxm-bizhi-piclist").getTemp();
+		let userTemp = dbJOL.collection("uni-id-users").field("_id,nickname").getTemp();
+		let classTemp = dbJOL.collection("xxm-bizhi-classify").getTemp();
+		
+		return await dbJOL.collection(picTemp,userTemp,classTemp).get();
 	}
 }
