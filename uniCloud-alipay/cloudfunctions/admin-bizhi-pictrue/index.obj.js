@@ -15,7 +15,7 @@ module.exports = {
 		})
 		let picTemp = dbJOL.collection("xxm-bizhi-piclist").getTemp();
 		let userTemp = dbJOL.collection("uni-id-users").field("_id,nickname").getTemp();
-		let classTemp = dbJOL.collection("xxm-bizhi-classify").getTemp();
+		let classTemp = dbJOL.collection("xxm-bizhi-classify").field("_id,name").getTemp();
 		
 		return await dbJOL.collection(picTemp,userTemp,classTemp).get();
 	}

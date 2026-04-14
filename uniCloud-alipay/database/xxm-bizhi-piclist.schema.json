@@ -25,13 +25,13 @@
 			"bsonType": "string",
 			"title": "属性",
 			"description": "属性 id，参考`xxm-bizhi-classify`表",
-			"foreignKey": "xxm-bizhi-classify"
+			"foreignKey": "xxm-bizhi-classify._id"
 		},
 		"Fsxid": {
 			"bsonType": "string",
 			"title": "副属性",
 			"description": "副属性 id，参考`xxm-bizhi-classify`表",
-			"foreignKey": "xxm-bizhi-classify"
+			"foreignKey": "xxm-bizhi-classify._id"
 		},
 		"cwname": {
 			"bsonType": "string",

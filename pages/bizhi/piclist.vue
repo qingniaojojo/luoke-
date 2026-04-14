@@ -33,19 +33,19 @@
 				<uni-th align="right"width="200">操作</uni-th>
 			</uni-tr>
 			<uni-tr v-for="item in piclist" :key="item._id">
-				<uni-td >张三</uni-td>
-				<uni-td >1</uni-td>
+				<uni-td >{{ item.nickname }}</uni-td>
+				<uni-td >{{ item.sort }}</uni-td>
 				<uni-td >123.jpg</uni-td>
 				<uni-td >哈喽</uni-td>
+				<uni-td >{{ item.classid[0].name }}</uni-td>
+				<uni-td >{{ item.Fsxid[0].name }}</uni-td>
 				<uni-td >123</uni-td>
-				<uni-td >123</uni-td>
-				<uni-td >123</uni-td>
-				<uni-td >123</uni-td>
-				<uni-td >123</uni-td>	
-				<uni-td >123</uni-td>
-				<uni-td >123</uni-td>
-				<uni-td >123</uni-td>
-				<uni-td >123</uni-td>
+				<uni-td >{{ item.p_at }}</uni-td>
+				<uni-td >{{ item.m_at }}</uni-td>	
+				<uni-td >{{ item.p_def }}</uni-td>
+				<uni-td >{{ item.m_def }}</uni-td>
+				<uni-td >{{ item.hp }}</uni-td>
+				<uni-td >{{ item.spd }}</uni-td>
 				<uni-td width="200">
 					<view class="operate-btn-group">
 							<button size="mini" type="primary" plain @click="update(item._id)">修改</button>
@@ -70,6 +70,7 @@ const handleAPP = ()=>{
 const getData = async ()=>{
 	let {errCode,errMsg,data} = await picCloudObj.list()
 	piclist.value = data;
+	console.log(data);
 }
 const update = (id)=>{
 

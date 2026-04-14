@@ -29,7 +29,7 @@
 
 				
 				<!-- 表格数据行 -->
-				<uni-tr v-for="item in classData" :key = "item._id"><!-- 为什么是item_什么 -->
+				<uni-tr v-for="item in classData" :key = "item._id">
 					<uni-td>
 						<image class="thumb" :src="item.picurl" mode="aspectFill"></image>
 					</uni-td>
