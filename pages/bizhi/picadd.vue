@@ -128,6 +128,7 @@
 
 
 <script setup>
+import { onMounted } from 'vue';
 import {ref} from 'vue';
 import { routerTo, showModal, showToast } from '../../utils/common';
 import { cloudToHttps, convertBlobUrlToWebP } from '../../utils/tools';// 添加这一行
@@ -237,7 +238,6 @@ const subMit= async ()=>{
 		});
 	}catch(err){
 		showToast({title:err});
-		uni.hideHomeButton();
 	}
 }
 //检查每个图片是否都选择了副属性
@@ -269,11 +269,22 @@ const uploadFile = async (item,index)=>{
 	}
 }
 const txupload = async (item,index)=>{
-	let tximg = await convertBlobUrlToWebP(item.tximg);//将特性图片转换为webp格式
-	return uniCloud.uploadFile({//上传特性图片
-		filePath:tximg,
-		cloudPath:`wallpaper/${dayjs().format("YYYYMMDD")}/tx_${Date.now()}_${index}.webp`
-	})
+    // 检查是否有特性图片
+    if (!item.tximg) {
+        // 如果没有特性图片，返回一个包含默认 fileID 的对象
+        return Promise.resolve({ fileID: '' });
+    }
+    try {
+        let tximg = await convertBlobUrlToWebP(item.tximg);
+        return uniCloud.uploadFile({
+            filePath:tximg,
+            cloudPath:`wallpaper/${dayjs().format("YYYYMMDD")}/tx_${Date.now()}_${index}.webp`
+        });
+    } catch (error) {
+        console.error('特性图片转换失败:', error);
+        // 转换失败时返回默认值
+        return Promise.resolve({ fileID: '' });
+    }
 }
 
 //选择分类

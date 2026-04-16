@@ -86,7 +86,7 @@ const params = ref({
 })
 onMounted(()=>{
 	selectRef.value.clearVal();
-})
+});
 // 分类选择器改变时调用
 const classifyChange = (e)=>{
 	params.value.classid = e;
@@ -118,7 +118,6 @@ const remove = async (id)=>{
 		uni.showLoading({mask:true});//加载时不能点击其他操作，不显示loading动画
 		let {errCode,errMsg} = await picCloudObj.remove([id]);//调用云函数remove删除宠物，数据库删除宠物
 		if(errCode!==0)  return showToast({"title":errMsg});//如果删除宠物失败，提示错误信息
-		showToast({"title":"删除成功"});//如果删除宠物成功，提示删除成功
 		getData();//刷新宠物列表
 	}catch(err){
 		showToast({"title":err});
