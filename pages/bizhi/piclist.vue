@@ -6,7 +6,13 @@
 			</template>
 			
 			<template #right>
-				<uni-data-select style="width: 200px;" placeholder="选择分类"></uni-data-select>
+				<uni-data-select style="width: 200px;" ref="selectRef" @change="classifyChange" collection ="xxm-bizhi-classify" 
+					field="_id as value, name as text,sort" 
+					:where='`enable == true && name!="无属性"`'
+					orderby="sort asc"
+					clear
+					v-model="selectvalue"
+					></uni-data-select>
 				<button type="primary" size="mini" @click="handleAPP">
 					<uni-icons type="plusempty" size="14" color="#fff"></uni-icons>
 					新增宠物
@@ -66,15 +72,28 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
-import { routerTo } from '../../utils/common';
+import { ref,onMounted } from 'vue';
+import { routerTo, showModal,showToast } from '../../utils/common';
 const picCloudObj = uniCloud.importObject("admin-bizhi-pictrue");
+const selectvalue = ref("");//用于存储分类选择器的值
+const selectRef = ref(null);//用于清空分类选择器的值时调用clearVal方法
 const piclist = ref([]);
 const params = ref({
-	current:1,
-	pageSize:10,
-	total:0,
+	current:1,//当前页码
+	pageSize:10,//每页显示数量
+	total:0,//总页数
+	classid:"",//分类id
 })
+onMounted(()=>{
+	selectRef.value.clearVal();
+})
+// 分类选择器改变时调用
+const classifyChange = (e)=>{
+	params.value.classid = e;
+	getData();
+	console.log(e);
+}
+//分页
 const changePage = (e)=>{
 	params.value.current = e.current;
 	getData();
@@ -90,10 +109,21 @@ const getData = async ()=>{
 	console.log(data);
 }
 const update = (id)=>{
-
+	console.log(id);
 }
-const remove = (id)=>{
-
+const remove = async (id)=>{
+	try{
+		let feedback = await showModal({content:"确认删除该宠物吗？"})
+		if(feedback!=='confirm') return;//如果用户点击了取消按钮，提示删除取消
+		uni.showLoading({mask:true});//加载时不能点击其他操作，不显示loading动画
+		let {errCode,errMsg} = await picCloudObj.remove([id]);//调用云函数remove删除宠物，数据库删除宠物
+		if(errCode!==0)  return showToast({"title":errMsg});//如果删除宠物失败，提示错误信息
+		showToast({"title":"删除成功"});//如果删除宠物成功，提示删除成功
+		getData();//刷新宠物列表
+	}catch(err){
+		showToast({"title":err});
+	}
+	
 }
 getData();
 </script>

@@ -9,16 +9,28 @@ module.exports = {
 		})
 		return await dbJOL.collection("xxm-bizhi-piclist").add(params);
 	},
-	async list({pegsize=10,current=1}={}){
+	async list({pegsize=10,current=1,classid=""}={}){
 		size = Math.min(100,pegsize);
 		let skip = (current - 1)*size;
-		const dbJOL = uniCloud.databaseForJQL({//创建一个JQL数据库对象,用于执行JQL新增
+		let where = {};
+		if(classid){
+			where.classid = classid;
+		}
+		const dbJOL = uniCloud.databaseForJQL({//创建一个JQL数据库对象,用于执行JQL查询
 			clientInfo:this.getClientInfo()
 		})
-		let picTemp = dbJOL.collection("xxm-bizhi-piclist").orderBy("sort").skip(skip).limit(size).getTemp();
+		let picTemp = dbJOL.collection("xxm-bizhi-piclist").where(where).orderBy("sort").skip(skip).limit(size).getTemp();
 		let userTemp = dbJOL.collection("uni-id-users").field("_id,nickname").getTemp();
 		let classTemp = dbJOL.collection("xxm-bizhi-classify").field("_id,name").getTemp();
 		
 		return await dbJOL.collection(picTemp,userTemp,classTemp).get({getCount:true});
+	},
+	async remove(ids = []){
+        const dbJQL = uniCloud.databaseForJQL({
+			clientInfo:this.getClientInfo()
+		})
+		let res = dbJQL.collection("xxm-bizhi-piclist")
+		.where(`_id in(${JSON.stringify(ids)})`).remove();
+		return await res;
 	}
 }

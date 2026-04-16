@@ -27,7 +27,6 @@
 					<uni-th align="right"width="200">操作</uni-th>
 				</uni-tr>
 
-				
 				<!-- 表格数据行 -->
 				<uni-tr v-for="item in classData" :key = "item._id">
 					<uni-td>
