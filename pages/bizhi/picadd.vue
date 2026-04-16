@@ -132,7 +132,6 @@ import {ref} from 'vue';
 import { routerTo, showModal, showToast } from '../../utils/common';
 import { cloudToHttps, convertBlobUrlToWebP } from '../../utils/tools';// 添加这一行
 import dayjs from 'dayjs';
-import error from '../../store/modules/error';
 const selectvalue = ref("");
 const selectRef = ref(null);//用于清空分类选择
 const fsxRef = ref(null);
