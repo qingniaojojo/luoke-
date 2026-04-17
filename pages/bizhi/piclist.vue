@@ -42,11 +42,11 @@
 			<uni-tr v-for="item in piclist" :key="item._id">
 				<uni-td >{{ item.user_id[0].nickname }}</uni-td>
 				<uni-td >{{ item.sort }}</uni-td>
-				<uni-td class="thumb"><image :src="item.picurl" mode="aspectFill"></image></uni-td>
+				<uni-td class="thumb"><image @click="previewImg(item.picurl)" :src="item.picurl" mode="aspectFill"></image></uni-td>
 				<uni-td >{{ item.name }}</uni-td>
 				<uni-td >{{ item.classid[0].name }}</uni-td>
 				<uni-td >{{ item.Fsxid[0].name }}</uni-td>
-				<uni-td class="thumb"><image :src="item.txzimg" mode="aspectFill"></image></uni-td>
+				<uni-td class="thumb"><image @click="previewImg(item.txzimg)" :src="item.txzimg" mode="aspectFill"></image></uni-td>
 				<uni-td >{{ item.description }}</uni-td>
 				<uni-td >{{ item.p_at }}</uni-td>
 				<uni-td >{{ item.m_at }}</uni-td>	
@@ -73,7 +73,7 @@
 
 <script setup>
 import { ref,onMounted } from 'vue';
-import { routerTo, showModal,showToast } from '../../utils/common';
+import { routerTo, showModal,showToast,previewImg } from '../../utils/common';
 const picCloudObj = uniCloud.importObject("admin-bizhi-pictrue");
 const selectvalue = ref("");//用于存储分类选择器的值
 const selectRef = ref(null);//用于清空分类选择器的值时调用clearVal方法
@@ -98,6 +98,7 @@ const changePage = (e)=>{
 	params.value.current = e.current;
 	getData();
 }
+//跳转新增宠物
 const handleAPP = ()=>{
 	routerTo("/pages/bizhi/picadd")
 }
@@ -132,8 +133,8 @@ getData();
 	padding: 20px;
 	.thumb{
 			image{
-				width: 100px;
-				height: 100px;
+				width: 60px;
+				height: 60px;
 			}
 		}
 }

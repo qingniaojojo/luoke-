@@ -45,3 +45,9 @@ export const routerTo = (url,type='navigate')=>{
 	}
 	
 }
+export function previewImg(url){
+	if(!url) return;
+	uni.previewImage({
+		urls:[url]
+	})
+}

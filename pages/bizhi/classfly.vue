@@ -141,8 +141,8 @@ getClassify();
 .main{//分类列表主容器
 	padding: 10px;//分类列表主容器内边距
 	.thumb{//分类列表缩略图
-		width: 70px;
-		height: 70px;
+		width: 60px;
+		height: 60px;
 		border-radius: 3px;
 		overflow: hidden;//分类列表缩略图超出部分隐藏
 		

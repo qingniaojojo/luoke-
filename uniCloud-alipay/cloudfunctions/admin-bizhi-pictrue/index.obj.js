@@ -1,5 +1,4 @@
-// jsdoc语法提示教程：https://ask.dcloud.net.cn/docs/#//ask.dcloud.net.cn/article/129
-let{httpsToCloud} = require("./utils.js");
+let{httpsToCloud} = require("custom-utils");
 module.exports = {
 	_before: function () { // 通用预处理器
 
@@ -33,7 +32,6 @@ module.exports = {
 		let {data} = await dbJQL.collection("xxm-bizhi-piclist")
 		.where(`_id in(${JSON.stringify(ids)})`).get();
 		let urls = data.map(item => httpsToCloud(item.picurl));
-		
 		let deleteFilePromise = await uniCloud.deleteFile({
 			fileList:urls
 		})
