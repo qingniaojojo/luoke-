@@ -3,7 +3,7 @@
 		<view class="piclist">
 			<custom-head-top>
 				<template #left>
-					新增宠物
+					编辑宠物
 				</template>
 			</custom-head-top>
 			<view class="main">
@@ -18,13 +18,11 @@
 				</view>
 				<view class="grid">
 					<view class="itemBox pic" v-for="(item,index) in piclist" :key="index">
-						<view class="close" @click="handleClose(index)">X</view>
 						<view class="left">
-							<image :src="item.tempurl" mode="aspectFit"></image><!--aspectFit 保持图片比例，等比例缩放-->
+							<image :src="item.tempurl" mode="aspectFit"></image>
 							<view class="mask">
-								<!-- 编辑图标 -->
 								<view class="icon">
-									<uni-icons type="compose" size="20" color="#fff"></uni-icons>
+									<uni-icons type="compose" size="20" color="#fff" @click="editMainImg(index)"></uni-icons>
 								</view>
 							</view>
 						</view>
@@ -89,7 +87,7 @@
 									</view>
 								</view>
 							</view>
-							<view class="skillBox"><!-- 技能选择区域 -->
+							<view class="skillBox">
 								<view class="skillTitle">技能配置</view>
 								<view class="skillItem">
 									<view class="skillNabox">
@@ -111,15 +109,12 @@
 								</view>
 							</view>
 						</view>
-					</view>
-					<view class="itemBox add" @click="handleSelect" v-if="piclist.length<4">
-						<view class="icon">+</view>
-						<view class="text">点击选择图片</view>
+						
 					</view>
 				</view>
 				<view class="btnGroup" v-if="piclist.length">
-					<button class="btn" type="primary" @click="subMit">发布</button>
-					<button class="btn" type="warn" plain @click="handleReset">清空</button>
+					<button class="btn saveBtn" type="primary" @click="subMit">保存修改</button>
+					<button class="btn backBtn" type="warn" plain @click="handleBack">返回</button>
 				</view>
 			</view>
 		</view>
@@ -128,82 +123,117 @@
 
 
 <script setup>
+import { onMounted } from 'vue';
 import {ref} from 'vue';
 import { routerTo, showModal, showToast } from '../../utils/common';
-import { cloudToHttps, convertBlobUrlToWebP } from '../../utils/tools';// 添加这一行
+import { cloudToHttps, convertBlobUrlToWebP } from '../../utils/tools';
 import dayjs from 'dayjs';
-const selectvalue = ref("");
-const selectRef = ref(null);//用于清空分类选择
-const fsxRef = ref(null);
-const piclist = ref([]);//图片列表，用于存储用户选择的图片，临时存储以数组的方式存储
-const picCloudObj = uniCloud.importObject("admin-bizhi-pictrue");
-const handleSelect = async()=>{
-	try {
-		let imgs = await uni.chooseImage({
-			count: 4,
-		})
-		// 获取 tempFilePaths 数组
-		let obj = {
-				cwname:"",//宠物名称
-				sort:0,//序列号
-				description:"",//宠物描述
-				picurl:"",//宠物真实图片路径
-				tempurl:"",//宠物临时图片路径
-				Fsxid:"",//副属性选择值
-				tximg:"",//特性图临时片路径
-				txzimg:"",//特性图片真实路径
-				p_def:"",//物防
-				m_def:"",//魔防
-				hp:"",//生命
-				spd:"",//速度
-				p_at:"",//物攻
-				m_at:""//魔攻
 
-			}
-		piclist.value = [...piclist.value,...imgs.tempFilePaths.map(item=>({...obj,tempurl:item}))]//将用户选择的图片路径，添加到数组中,防止添加图片时把之前的图片覆盖
+const selectvalue = ref("");
+const piclist = ref([]);
+const picCloudObj = uniCloud.importObject("admin-bizhi-pictrue");
+const editId = ref("");
+
+onMounted(()=>{
+	const pages = getCurrentPages();
+	const currentPage = pages[pages.length - 1];
+	const options = currentPage.options;
+	if (options && options.id) {
+		editId.value = options.id;
+		loadPetData();
+	}
+});
+
+const loadPetData = async ()=>{
+	try{
+		uni.showLoading({mask:true});
+		let {errCode, data} = await picCloudObj.list({_id: editId.value});
+		if(errCode !== 0 || !data || data.length === 0) return showToast({title:"获取数据失败"});
+		let item = data[0];
+		const classId = item.classid && item.classid.length > 0 ? item.classid[0]._id : '';
+		const fsxId = item.Fsxid && item.Fsxid.length > 0 ? item.Fsxid[0]._id : '';
+		selectvalue.value = classId;
+		piclist.value = [{
+			_id: item._id,
+			cwname: item.name,
+			sort: item.sort,
+			description: item.description,
+			picurl: item.picurl,
+			tempurl: item.picurl,//临时图片url
+			Fsxid: fsxId,
+			tximg: item.txzimg,
+			txzimg: item.txzimg,
+			p_def: item.p_def,
+			m_def: item.m_def,
+			hp: item.hp,
+			spd: item.spd,
+			p_at: item.p_at,
+			m_at: item.m_at,
+			skill1: item.skill1,
+			skill2: item.skill2,
+			skill3: item.skill3,
+			skill4: item.skill4,
+			classid: classId,
+			isMainImgChanged: false,//是否修改主图片
+			isTxImgChanged: false//是否修改特性图片
+		}];
+		uni.hideLoading();
+	}catch(err){
+		showToast({title:err});
+	}
+}
+//选择主图片
+const editMainImg = async (index)=>{
+	try {
+		let imgs = await uni.chooseImage({count: 1});
+		if (piclist.value[index]) {//如果存在主图片
+			piclist.value[index].tempurl = imgs.tempFilePaths[0];//将选择的图片赋值给tempurl属性
+			piclist.value[index].picurl = imgs.tempFilePaths[0];//将选择的图片赋值给picurl属性
+			piclist.value[index].isMainImgChanged = true;
+		}
 	} catch (error) {
-		// 捕获用户取消选择的错误，不做任何操作
 		if (error.errMsg !== 'chooseImage:fail cancel') {
-			// 其他错误可以在这里处理
 			console.error('选择图片失败:', error);
 		}
 	}
 }
 
-//移除选择
-const handleClose = async(index)=>{
-	let feedback = await showModal({content:"是否删除"});
-	if(feedback == "confirm") piclist.value.splice(index,1);
-	
+const handleBack = ()=>{
+	routerTo("/pages/bizhi/piclist","redirect");//返回宠物列表
 }
-
-//清空所有
-const handleReset =async()=>{
-	let feedback = await showModal({content:"是否清空"});
-	if(feedback == "confirm") piclist.value=[];
-}
-
-//提交
+//保存修改
 const subMit= async ()=>{
 	if(!selectvalue.value) return showToast({title:"分类必须选择"})
-	// 检查每个图片是否都选择了副属性
 	if(!checkFsx()) return;
 	let desRes = piclist.value.every(item=>item.description)
 	if(!desRes) return showToast({title:"特性不能为空"})
 	try{
 		uni.showLoading({mask:true});
-		// 等待所有图片上传完成
-		let uploudTass =  piclist.value.map((item,index)=> uploadFile(item,index));
-		let Txuploud = piclist.value.map((item,index)=> txupload(item,index));
+		
+		let uploudTass = piclist.value.map((item,index)=>{
+			if(item.isMainImgChanged){
+				return uploadFile(item,index);
+			}
+			return Promise.resolve({fileID: item.picurl});
+		});
+		
+		let Txuploud = piclist.value.map((item,index)=>{
+			if(item.isTxImgChanged){
+				return txupload(item,index);
+			}
+			return Promise.resolve({fileID: item.txzimg});
+		});
+		
 		let cloudfiles = await Promise.all(uploudTass);
 		let txcloudfiles = await Promise.all(Txuploud);
+		
 		let params = piclist.value.map((item,index)=>{
-			let {tempurl, tximg, ...rest} = item;
+			let {tempurl, tximg, isMainImgChanged, isTxImgChanged, ...rest} = item;
 			return{
 				...rest,
-				picurl: cloudToHttps(cloudfiles[index].fileID),
-				txzimg: cloudToHttps(txcloudfiles[index].fileID),
-				// 将字符串属性转换为数字
+				name: item.cwname,
+				picurl: isMainImgChanged ? cloudToHttps(cloudfiles[index].fileID) : item.picurl,
+				txzimg: isTxImgChanged ? cloudToHttps(txcloudfiles[index].fileID) : item.txzimg,
 				sort: Number(item.sort) || 0,
 				p_def: Number(item.p_def) || 0,
 				m_def: Number(item.m_def) || 0,
@@ -214,45 +244,26 @@ const subMit= async ()=>{
 			}
 		})
 		
-		let {errCode,errMsg} = await picCloudObj.add(params);
+		let {errCode,errMsg} = await picCloudObj.update(params[0]);
 		if(errCode!==0) return showToast({title:errMsg});
-		showToast({title:"发布成功"});
+		showToast({title:"修改成功"});
 		setTimeout(()=>routerTo("/pages/bizhi/piclist","redirect"),1500);
-		//可以定义其他变量不能为空 
-		if (selectRef.value) {
-			selectRef.value.clearVal();//清空分类选择，clearVal是自带方法
-		}
-		if (fsxRef.value && Array.isArray(fsxRef.value)) {
-			fsxRef.value.forEach(instance => {
-				if (instance) {
-					instance.clearVal();
-				}
-			});// 直接处理数组情况，fsxRef 在 v-for 中使用
-		}
-		// 清空每个图片的副属性选择值
-		piclist.value.forEach(item => {
-			if (item) {
-				item.Fsxid = "";//副属性id，用于提交
-			}
-		});
 	}catch(err){
 		showToast({title:err});
 	}
 }
-//检查每个图片是否都选择了副属性
+//检查副属性是否选择
 const checkFsx = () => {
-	const allHasFsx = piclist.value.every(item => item.Fsxid);//检查每个图片是否都选择了副属性
+	const allHasFsx = piclist.value.every(item => item.Fsxid);
 	if(!allHasFsx) {
-		showToast({title:"所有宠物的副属性必须选择"})
+		showToast({title:"副属性必须选择"})
 		return false;
 	}
 	return true;
 }
-
+//上传主图片
 const uploadFile = async (item,index)=>{
-	// 检查是否有主图片
 	if (!item.tempurl) {
-		// 如果没有主图片，返回一个包含默认 fileID 的对象
 		return Promise.resolve({ fileID: '' });
 	}
 	try {
@@ -263,14 +274,12 @@ const uploadFile = async (item,index)=>{
 		});
 	} catch (error) {
 		console.error('主图片转换失败:', error);
-		// 转换失败时返回默认值
 		return Promise.resolve({ fileID: '' });
 	}
 }
+//上传特性图片
 const txupload = async (item,index)=>{
-    // 检查是否有特性图片
     if (!item.tximg) {
-        // 如果没有特性图片，返回一个包含默认 fileID 的对象
         return Promise.resolve({ fileID: '' });
     }
     try {
@@ -281,37 +290,31 @@ const txupload = async (item,index)=>{
         });
     } catch (error) {
         console.error('特性图片转换失败:', error);
-        // 转换失败时返回默认值
         return Promise.resolve({ fileID: '' });
     }
 }
-
 //选择分类
 const classifyChange =(e)=>{
 	piclist.value.forEach(iteam=>{
 		iteam.classid =e
 	})
 }
-//选择副属性，将用户选择的副属性 ID 与对应的宠物数据关联，实现副属性选择的实时更新。
+
 const fsxChange = (val, index)=>{
 	if (piclist.value[index]) {
-		piclist.value[index].Fsxid = val;//副属性id,Fsx是用户选择的副属性id
+		piclist.value[index].Fsxid = val;
 	}
 }
 //选择特性图片
 const txImg = async(index)=>{
 	try {
-		let imgs = await uni.chooseImage({
-			count: 1,
-		})
-		// 获取 tempFilePaths 数组
+		let imgs = await uni.chooseImage({count: 1});
 		if (piclist.value[index]) {
 			piclist.value[index].tximg = imgs.tempFilePaths[0];
+			piclist.value[index].isTxImgChanged = true;
 		}
 	} catch (error) {
-		// 捕获用户取消选择的错误，不做任何操作
 		if (error.errMsg !== 'chooseImage:fail cancel') {
-			// 其他错误可以在这里处理
 			console.error('选择特性图片失败:', error);
 		}
 	}
@@ -335,37 +338,24 @@ const txImg = async(index)=>{
 			align-items: start;
 			padding:10px;
 			position: relative;
-			.close{
-				position: absolute;
-				cursor: pointer;
-				right: 0;
-				top: 0;
-				width: 30px;
-				height: 30px;
-				background: #E43D33;
-				color: #FFF;
-				display: none;
-				align-items: center;
-				justify-content: center;
-			}
 			
 			.left{
 				width: 140px;
 				aspect-ratio: 9/16;
 				background: conic-gradient(#ccc 0 25%,#fff 25% 50%,#ccc 50% 75%,#fff 75%);
 				background-size: 15px 15px;
-				position: relative;//定位
+				position: relative;
 				image{
 					width: 100%;
 					height: 100%;
 				}
 				.mask{
-					position: absolute;//绝对定位，不占用文档流空间，不被元素遮挡
-					bottom: 0;//距离底部0像素
+					position: absolute;
+					bottom: 0;
 					left: 0;
 					width: 100%;
 					height: 30px;
-					background: rgba(0,0,0,0.4);//最后的0.4是透明度，值越大小，透明度越低，显示越清晰。
+					background: rgba(0,0,0,0.4);
 					display: flex;
 					align-items: center;
 					justify-content: center;
@@ -441,28 +431,6 @@ const txImg = async(index)=>{
 				}
 			}
 		}
-		
-		.itemBox.add{
-			display: flex;
-			align-items: center;
-			justify-content: center;
-			flex-direction: column;
-			color: #888;
-			cursor: pointer;
-			.icon{
-				font-size: 50px;
-			}
-			.text{
-				font-size:20px;
-				padding-top: 20px;
-			}
-		}
-		.itemBox:hover{//鼠标悬停时，边框颜色变化，显示关闭按钮
-			border-color: #e4e4e4;
-			.close{
-				display: flex;
-			}
-		}
 	}
 	.setClassify{
 		padding: 0 0 16px 0;
@@ -470,14 +438,17 @@ const txImg = async(index)=>{
 	}
 	.btnGroup{
 		display: flex;
-		padding: 10px 0;
+		padding: 10px 600px 0 0;
 		margin: 0;
-		button{
+		gap: 10px;
+		.saveBtn{
 			width: 150px;
+			margin-right: 0;
 		}
-		button:first-child{
-		margin-right: 10px; /* 调整按钮之间的间距 */
-		}	
+		.backBtn{
+			width: 150px;
+			margin-left: 0;
+		}
 	}
 }
 </style>

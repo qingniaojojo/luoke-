@@ -172,6 +172,12 @@
 	"style": {
 		"navigationBarTitleText": "新增宠物"
 	}
+},
+{
+	"path": "pages/bizhi/picedit",
+	"style": {
+		"navigationBarTitleText": "编辑宠物"
+	}
 }
 ],
 	"subPackages": [{

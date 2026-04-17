@@ -9,12 +9,15 @@ module.exports = {
 		})
 		return await dbJOL.collection("xxm-bizhi-piclist").add(params);
 	},
-	async list({pegsize=10,current=1,classid=""}={}){
+	async list({pegsize=10,current=1,classid="",_id=""}={}){
 		size = Math.min(100,pegsize);
 		let skip = (current - 1)*size;
 		let where = {};
 		if(classid){
 			where.classid = classid;
+		}
+		if(_id){
+			where._id = _id;
 		}
 		const dbJOL = uniCloud.databaseForJQL({//创建一个JQL数据库对象,用于执行JQL查询
 			clientInfo:this.getClientInfo()
@@ -39,6 +42,13 @@ module.exports = {
 		.where(`_id in(${JSON.stringify(ids)})`).remove();
 		let [,result] = await Promise.all([deleteFilePromise,removePromise]);
 		return result;
+	},
+	async update(params={}){
+		const dbJQL = uniCloud.databaseForJQL({
+			clientInfo:this.getClientInfo()
+		})
+		const {_id, ...updateData} = params;
+		return await dbJQL.collection("xxm-bizhi-piclist").doc(_id).update(updateData);
 	}
 	
 }

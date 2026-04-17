@@ -110,7 +110,9 @@ const getData = async ()=>{
 	console.log(data);
 }
 const update = (id)=>{
-	console.log(id);
+	uni.navigateTo({
+		url: '/pages/bizhi/picedit?id=' + id
+	})
 }
 const remove = async (id)=>{
 	try{
