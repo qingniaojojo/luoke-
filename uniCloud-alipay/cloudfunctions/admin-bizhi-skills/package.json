@@ -1,0 +1,12 @@
+{
+	"name": "admin-bizhi-skills",
+	"version": "0.0.1",
+	"description": "技能管理云函数",
+	"main": "index.obj.js",
+	"dependencies": {
+		"custom-utils": "file:../common/custom-utils"
+	},
+	"extensions": {
+		"uni-cloud-jql": {}
+	}
+}

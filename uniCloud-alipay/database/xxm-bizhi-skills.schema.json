@@ -1,0 +1,74 @@
+{
+	"bsonType": "object",
+	"required": [
+		"name",
+		"classid"
+	],
+	"permission": {
+		"read": true,
+		"create": true,
+		"update": true,
+		"delete": true
+	},
+	"properties": {
+		"_id": {
+			"description": "存储文档 ID，系统自动生成"
+		},
+		"name": {
+			"bsonType": "string",
+			"description": "技能名称",
+			"label": "技能名称",
+			"trim": "both",
+			"minLength": 2,
+			"maxLength": 20
+		},
+		"classid": {
+			"bsonType": "string",
+			"description": "技能分类ID",
+			"label": "技能分类",
+			"foreignKey": "xxm-bizhi-classify._id"
+		},
+		"description": {
+			"bsonType": "string",
+			"description": "技能描述",
+			"label": "技能描述"
+		},
+		"sort": {
+			"bsonType": "int",
+			"description": "技能显示顺序",
+			"label": "排序"
+		},
+		"picurl": {
+			"bsonType": "string",
+			"description": "技能图片地址"
+		},
+		"power": {
+			"bsonType": "int",
+			"description": "技能威力",
+			"label": "威力",
+			"defaultValue": 0
+		},
+		"cost": {
+			"bsonType": "int",
+			"description": "技能消耗",
+			"label": "消耗",
+			"defaultValue": 0
+		},
+		"user_id": {
+			"bsonType": "string",
+			"description": "发布人ID",
+			"foreignKey": "uni-id-users._id",
+			"forceDefaultValue": {
+				"$env": "uid"
+			}
+		},
+		"createTime": {
+			"bsonType": "timestamp",
+			"description": "创建时间",
+			"forceDefaultValue": {
+				"$env": "now"
+			}
+		}
+	},
+	"version": "0.0.1"
+}

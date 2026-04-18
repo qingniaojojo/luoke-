@@ -51,20 +51,14 @@
 							<button size="mini" type="warn" plain @click="remove(item._id)">删除</button><!-- 删除按钮点击时调用remove函数，传入分类id,item._id是分类id -->
 						</view>
 					</uni-td>
-
 				</uni-tr>
-			
 			</uni-table>
 		</view>
 		
-
 		<view class="paging">
 			<!-- <uni-pagination title="标题文字" show-icon="true" total="3" current="2"></uni-pagination>-->
 		</view>
-
 		<classifyPopup ref="classPopRef" :item="item" :type="type" @success="getClassify()" :maxSort= "classData[classData.length-1]?.sort"> </classifyPopup><!-- 被封装的弹窗调用 新增分类弹窗成功后(触发success事件)，刷新分类列表(用getClassify())-->
-
-
 	</view>
 </template>
 

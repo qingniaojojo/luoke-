@@ -1,0 +1,15 @@
+[
+	{
+		"_id": "init_skill_1",
+		"name": "火球术",
+		"classid": "",
+		"description": "发射一颗火球攻击敌人",
+		"sort": 1,
+		"picurl": "",
+		"power": 100,
+		"cost": 10,
+		"select": false,
+		"enable": true,
+		"createTime": 1713445379668
+	}
+]
