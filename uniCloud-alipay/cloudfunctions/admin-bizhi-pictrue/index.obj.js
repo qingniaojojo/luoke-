@@ -14,7 +14,10 @@ module.exports = {
 		let skip = (current - 1)*size;
 		let where = {};
 		if(classid){
-			where.classid = classid;
+			where.$or = [
+				{ classid: classid },
+				{ Fsxid: classid }
+			];
 		}
 		if(_id){
 			where._id = _id;
@@ -25,7 +28,7 @@ module.exports = {
 		let picTemp = dbJOL.collection("xxm-bizhi-piclist").where(where).orderBy("sort").skip(skip).limit(size).getTemp();
 		let userTemp = dbJOL.collection("uni-id-users").field("_id,nickname").getTemp();
 		let classTemp = dbJOL.collection("xxm-bizhi-classify").field("_id,name").getTemp();
-		
+
 		return await dbJOL.collection(picTemp,userTemp,classTemp).get({getCount:true});
 	},
 	async remove(ids = []){
@@ -50,5 +53,5 @@ module.exports = {
 		const {_id, ...updateData} = params;
 		return await dbJQL.collection("xxm-bizhi-piclist").doc(_id).update(updateData);
 	}
-	
+
 }

@@ -131,7 +131,7 @@ const handleDelete = async (id) => {
 	try {
 		let feedback = await showModal({ content: "确认删除该技能吗？" });
 		if (feedback !== 'confirm') return showToast({ title: "删除取消" });
-		uni.showLoading({ mask: true });
+		uni.showLoading({ mask: true });//显示加载中提示，mask: true遮罩层，防止用户操作
 		loadingShown = true;//用于判断是否需要隐藏加载中提示
 		let { errCode, errMsg } = await skillCloudObj.remove([id]);
 		if (errCode !== 0) return showToast({ title: errMsg });

@@ -134,7 +134,7 @@ import { cloudToHttps, convertBlobUrlToWebP } from '../../utils/tools';// 添加
 import dayjs from 'dayjs';
 const selectvalue = ref("");
 const selectRef = ref(null);//用于清空分类选择
-const fsxRef = ref(null);
+const fsxRef = ref(null);//用于清空副属性选择
 const piclist = ref([]);//图片列表，用于存储用户选择的图片，临时存储以数组的方式存储
 const picCloudObj = uniCloud.importObject("admin-bizhi-pictrue");
 const handleSelect = async()=>{

@@ -64,8 +64,8 @@ import { showToast } from '../../../utils/common';
 
 const emits = defineEmits(["success"]);
 const props = defineProps(["item", "type", "maxSort"]);
-const skillCloudObj = uniCloud.importObject("admin-bizhi-skills", { customUI: true });
-const typename = computed(() => props.type == 'add' ? '新增' : '修改');
+const skillCloudObj = uniCloud.importObject("admin-bizhi-skills", { customUI: true });//用于操作技能数据库
+const typename = computed(() => props.type == 'add' ? '新增' : '修改');//根据type属性判断是新增还是修改
 // 组件卸载时，撤销 tempurl 对象 URL
 onUnmounted(() => {
 	if (formData.value.tempurl && formData.value.tempurl.startsWith('blob:')) {
@@ -136,7 +136,7 @@ const rules = ref({
 		label: "技能分类"
 	}
 });
-
+// 提交表单
 const submit = async () => {
 	try {
 		uni.showLoading({ mask: true });
@@ -164,7 +164,7 @@ const submit = async () => {
 		showToast({ title: err });
 	}
 };
-
+// 上传文件
 const uploadFile = async () => {
 	let tempurl = formData.value.tempurl;
 	// 只有当 tempurl 是 blob URL 时才转换
@@ -176,7 +176,7 @@ const uploadFile = async () => {
 		cloudPath: "skills/" + dayjs().format("YYYYMMDD") + "/" + Date.now() + ".webp"
 	});
 };
-
+// 选择图片
 const selectPicurl = () => {
 	uni.chooseImage({
 		count: 1,
@@ -185,7 +185,7 @@ const selectPicurl = () => {
 		}
 	});
 };
-
+// 删除图片
 const delImg = () => {
 	if (formData.value.tempurl && formData.value.tempurl.startsWith('blob:')) {
 		URL.revokeObjectURL(formData.value.tempurl);
@@ -193,14 +193,14 @@ const delImg = () => {
 	formData.value.tempurl = "";
 	formData.value.picurl = "";
 };
-
+// 打开弹窗
 const open = () => {
 	nextTick(() => {
 		if (props.type == 'add') formData.value.sort = (props.maxSort || 0) + 1;
 	});
 	SkillPopup.value.open();
 };
-
+// 关闭弹窗
 const close = () => {
 	if (formData.value.tempurl && formData.value.tempurl.startsWith('blob:')) {
 		URL.revokeObjectURL(formData.value.tempurl);
@@ -208,7 +208,7 @@ const close = () => {
 	SkillPopup.value.close();
 	init();
 };
-
+// 初始化表单数据
 const init = () => {
 	formData.value = {
 		name: "",
@@ -221,7 +221,7 @@ const init = () => {
 		cost: 0
 	};
 };
-
+// 导出方法
 defineExpose({
 	open
 });
