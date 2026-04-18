@@ -125,7 +125,7 @@
 <script setup>
 import { onMounted } from 'vue';
 import {ref} from 'vue';
-import { routerTo, showModal, showToast } from '../../utils/common';
+import { routerTo, showToast } from '../../utils/common';
 import { cloudToHttps, convertBlobUrlToWebP } from '../../utils/tools';
 import dayjs from 'dayjs';
 
@@ -138,20 +138,21 @@ onMounted(()=>{
 	const pages = getCurrentPages();
 	const currentPage = pages[pages.length - 1];
 	const options = currentPage.options;
-	if (options && options.id) {
+	if (options && options.id) {//
 		editId.value = options.id;
 		loadPetData();
 	}
 });
 
+//获取宠物详情
 const loadPetData = async ()=>{
 	try{
-		uni.showLoading({mask:true});
+		uni.showLoading({mask:true});//加载时不能点击其他操作，不显示loading动画
 		let {errCode, data} = await picCloudObj.list({_id: editId.value});
 		if(errCode !== 0 || !data || data.length === 0) return showToast({title:"获取数据失败"});
 		let item = data[0];
-		const classId = item.classid && item.classid.length > 0 ? item.classid[0]._id : '';
-		const fsxId = item.Fsxid && item.Fsxid.length > 0 ? item.Fsxid[0]._id : '';
+		const classId = item.classid && item.classid.length > 0 ? item.classid[0]._id : '';//分类id
+		const fsxId = item.Fsxid && item.Fsxid.length > 0 ? item.Fsxid[0]._id : '';//副属性id
 		selectvalue.value = classId;
 		piclist.value = [{
 			_id: item._id,
@@ -177,7 +178,7 @@ const loadPetData = async ()=>{
 			isMainImgChanged: false,//是否修改主图片
 			isTxImgChanged: false//是否修改特性图片
 		}];
-		uni.hideLoading();
+		uni.hideLoading();//隐藏loading动画
 	}catch(err){
 		showToast({title:err});
 	}

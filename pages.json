@@ -164,7 +164,7 @@
 {
 	"path": "pages/bizhi/piclist",
 	"style": {
-		"navigationBarTitleText": ""
+		"navigationBarTitleText": "宠物列表"
 	}
 },
 {
@@ -177,6 +177,11 @@
 	"path": "pages/bizhi/picedit",
 	"style": {
 		"navigationBarTitleText": "编辑宠物"
+	}
+},{
+	"path": "pages/bizhi/picskills",
+	"style": {
+		"navigationBarTitleText": "宠物技能"
 	}
 }
 ],
