@@ -66,7 +66,7 @@ const emits = defineEmits(["success"]);
 const props = defineProps(["item", "type", "maxSort"]);
 const skillCloudObj = uniCloud.importObject("admin-bizhi-skills", { customUI: true });
 const typename = computed(() => props.type == 'add' ? '新增' : '修改');
-
+// 组件卸载时，撤销 tempurl 对象 URL
 onUnmounted(() => {
 	if (formData.value.tempurl && formData.value.tempurl.startsWith('blob:')) {
 		URL.revokeObjectURL(formData.value.tempurl);
@@ -161,10 +161,7 @@ const submit = async () => {
 		init();
 		emits("success", { msg: typename.value + "成功~~" });
 	} catch (err) {
-		console.log(err);
 		showToast({ title: err });
-	} finally {
-		uni.hideLoading();
 	}
 };
 

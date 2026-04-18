@@ -118,7 +118,6 @@ const getSkillList = async () => {
 const handleEdit = async (id) => {
 	try {
 		let { data: itemData, errCode, errMsg } = await skillCloudObj.item(id);
-		if (errCode !== 0) return showToast({ title: errMsg });
 		item.value = itemData;
 		type.value = "update";
 		skillPopRef.value.open();
@@ -128,19 +127,19 @@ const handleEdit = async (id) => {
 };
 //删除技能
 const handleDelete = async (id) => {
+	let loadingShown = false;//用于判断是否需要隐藏加载中提示
 	try {
 		let feedback = await showModal({ content: "确认删除该技能吗？" });
 		if (feedback !== 'confirm') return showToast({ title: "删除取消" });
 		uni.showLoading({ mask: true });
+		loadingShown = true;//用于判断是否需要隐藏加载中提示
 		let { errCode, errMsg } = await skillCloudObj.remove([id]);
 		if (errCode !== 0) return showToast({ title: errMsg });
 		showToast({ title: "删除成功" });
 		getSkillList();
 	} catch (err) {
 		showToast({ title: err });
-	} finally {
-		uni.hideLoading();
-	}
+	} 
 };
 
 getSkillList();//获取技能列表

@@ -91,7 +91,6 @@ onMounted(()=>{
 const classifyChange = (e)=>{
 	params.value.classid = e;
 	getData();
-	console.log(e);
 }
 //分页
 const changePage = (e)=>{
@@ -107,7 +106,6 @@ const getData = async ()=>{
 	let {errCode,errMsg,data,count} = await picCloudObj.list(params.value);
 	piclist.value = data;
 	params.value.total = count;
-	console.log(data);
 }
 const update = (id)=>{
 	uni.navigateTo({
