@@ -29,16 +29,16 @@ export function showModal({content="",showCancel=true}={}){//显示模态弹窗,
 //路由跳转方式
 export const routerTo = (url,type='navigate')=>{
 	if(type === "navigate"){
-		uni.navigateTo({
-			url
+		uni.navigateTo({//跳转到新页面，保留当前页面栈
+			url//跳转的页面路径
 		})
 	}else if(type==='redirect'){
-		uni.redirectTo({
-			url
+		uni.redirectTo({//跳转到新页面，不保留当前页面栈
+			url//跳转的页面路径
 		})
 	}else if(type==='relaunch'){
-		uni.reLaunch({
-			url
+		uni.reLaunch({//重新启动应用，不保留当前页面栈
+			url//跳转的页面路径
 		})
 	}else{
 		return "错误信息"

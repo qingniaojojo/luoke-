@@ -1,4 +1,4 @@
-const { addListener } = require("cluster");
+let{httpsToCloud} = require("custom-utils");
 
 module.exports = {
 	_before: function () { // 通用预处理器
@@ -18,11 +18,19 @@ module.exports = {
 		return await dbJOL.collection("xxm-bizhi-classify").orderBy("sort asc").get()
 	},
 	async remove(ids = []){
-		const dbJOL = uniCloud.databaseForJQL({//创建一个JQL数据库对象,用于执行JQL删除
+		const dbJQL = uniCloud.databaseForJQL({//创建一个JQL数据库对象,用于执行JQL删除
 			clientInfo:this.getClientInfo()
 		})
-		return await dbJOL.collection("xxm-bizhi-classify").where(`_id in ${JSON.stringify(ids)}`).remove();//删除的写法要注意
-		
+		let {data} = await dbJQL.collection("xxm-bizhi-classify")
+		.where(`_id in ${JSON.stringify(ids)}`).get();
+		let urls = data.filter(item => item.picurl).map(item => httpsToCloud(item.picurl));
+		let deleteFilePromise = urls.length > 0 ? uniCloud.deleteFile({
+			fileList:urls
+		}) : Promise.resolve();
+		let removePromise = await dbJQL.collection("xxm-bizhi-classify")
+		.where(`_id in ${JSON.stringify(ids)}`).remove();
+		let [,result] = await Promise.all([deleteFilePromise,removePromise]);
+		return result;
 	},
 	async item(id){
 		const dbJOL = uniCloud.databaseForJQL({//创建一个JQL数据库对象,用于执行JQL修改

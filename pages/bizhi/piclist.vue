@@ -83,7 +83,7 @@ import petSkillsPopup from "./children/petSkillsPopup.vue";
 const picCloudObj = uniCloud.importObject("admin-bizhi-pictrue");
 const selectvalue = ref("");//用于存储分类选择器的值
 const selectRef = ref(null);//用于清空分类选择器的值时调用clearVal方法
-const petSkillsPopupRef = ref(null);
+const petSkillsPopupRef = ref(null);//用于调用petSkillsPopup组件的方法
 const piclist = ref([]);
 const currentPetName = ref('');
 const params = ref({
@@ -117,8 +117,8 @@ const getData = async ()=>{
 }
 const update = (id)=>{
 	uni.navigateTo({
-		url: '/pages/bizhi/picedit?id=' + id
-	})
+		url: '/pages/bizhi/picedit?id=' + id//跳转修改宠物页面，传入宠物id。
+		})
 }
 const remove = async (id)=>{
 	try{
