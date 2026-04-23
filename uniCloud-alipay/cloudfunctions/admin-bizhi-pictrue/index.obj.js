@@ -37,10 +37,14 @@ module.exports = {
 				})
 		let {data} = await dbJQL.collection("xxm-bizhi-piclist")//查询要删除的图片
 		.where(`_id in(${JSON.stringify(ids)})`).get();
-		let urls = data.map(item => httpsToCloud(item.picurl));
-		let deleteFilePromise = await uniCloud.deleteFile({
+		let urls = [];
+		data.forEach(item => {
+			if(item.picurl) urls.push(httpsToCloud(item.picurl));
+			if(item.txzimg) urls.push(httpsToCloud(item.txzimg));
+		});
+		let deleteFilePromise = urls.length > 0 ? uniCloud.deleteFile({
 			fileList:urls
-		})
+		}) : Promise.resolve();
 		let removePromise = await dbJQL.collection("xxm-bizhi-piclist")
 		.where(`_id in(${JSON.stringify(ids)})`).remove();
 		let [,result] = await Promise.all([deleteFilePromise,removePromise]);
