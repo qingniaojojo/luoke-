@@ -88,23 +88,19 @@
 								</view>
 							</view>
 							<view class="skillBox">
-								<view class="skillTitle">技能配置</view>
+								<view class="skillTitle">技能配置（最多18个）</view>
 								<view class="skillItem">
-									<view class="skillNabox">
-										<view class="skillName">1</view>
-										<uni-easyinput v-model="item.skill1" type="number" placeholder="请输入技能1值"></uni-easyinput>
-									</view>
-									<view class="skillNabox">
-										<view class="skillName">2</view>
-										<uni-easyinput v-model="item.skill2" type="number" placeholder="请输入技能2值"></uni-easyinput>
-									</view>
-									<view class="skillNabox">
-										<view class="skillName">3</view>
-										<uni-easyinput v-model="item.skill3" type="number" placeholder="请输入技能3值"></uni-easyinput>
-									</view>
-									<view class="skillNabox">
-										<view class="skillName">4</view>
-										<uni-easyinput v-model="item.skill4" type="number" placeholder="请输入技能4值"></uni-easyinput>
+									<view class="skillNabox" v-for="(skill, sIndex) in 18" :key="sIndex">
+										<view class="skillName">{{ sIndex + 1 }}</view>
+										<view class="skill-select-btn" @click="openSkillSelect(index, sIndex)">
+											<text v-if="item.skills && item.skills[sIndex]" class="skill-name-text">
+												{{ getSkillName(item.skills[sIndex]) }}
+											</text>
+											<text v-else class="skill-placeholder">请选择</text>
+											<view v-if="item.skills && item.skills[sIndex]" class="clear-skill" @click.stop="clearSkill(index, sIndex)">
+												<uni-icons type="close" size="14" color="#999"></uni-icons>
+											</view>
+										</view>
 									</view>
 								</view>
 							</view>
@@ -119,6 +115,7 @@
 			</view>
 		</view>
 	</view>
+	<skillSelectPopup ref="skillSelectPopupRef" :currentSkillId="getCurrentSkillId()" :selectedSkillIds="getAllSelectedSkillIds()" @select="onSkillSelect"></skillSelectPopup>
 </template>
 
 
@@ -128,11 +125,15 @@ import {ref} from 'vue';
 import { routerTo, showToast } from '../../utils/common';
 import { cloudToHttps, convertBlobUrlToWebP } from '../../utils/tools';
 import dayjs from 'dayjs';
+import skillSelectPopup from "./children/skillSelectPopup.vue";
 
 const selectvalue = ref("");
 const piclist = ref([]);
 const picCloudObj = uniCloud.importObject("admin-bizhi-pictrue");
 const editId = ref("");
+const skillSelectPopupRef = ref(null);
+const currentEditSkillIndex = ref({ picIndex: 0, skillIndex: 0 });
+const skillNames = ref({});
 
 onMounted(()=>{
 	const pages = getCurrentPages();
@@ -156,7 +157,7 @@ const loadPetData = async ()=>{
 		selectvalue.value = classId;
 		piclist.value = [{
 			_id: item._id,
-			cwname: item.name,
+			cwname: item.cwname,
 			sort: item.sort,
 			description: item.description,
 			picurl: item.picurl,
@@ -170,14 +171,17 @@ const loadPetData = async ()=>{
 			spd: item.spd,
 			p_at: item.p_at,
 			m_at: item.m_at,
-			skill1: item.skill1,
-			skill2: item.skill2,
-			skill3: item.skill3,
-			skill4: item.skill4,
+			skills: item.skills || [],
 			classid: classId,
 			isMainImgChanged: false,//是否修改主图片
 			isTxImgChanged: false//是否修改特性图片
 		}];
+		// 预加载技能名称
+		if (item.skills && item.skills.length) {
+			item.skills.forEach(skillId => {
+				if (skillId) loadSkillName(skillId);
+			});
+		}
 		uni.hideLoading();//隐藏loading动画
 	}catch(err){
 		showToast({title:err});
@@ -230,9 +234,11 @@ const subMit= async ()=>{
 		
 		let params = piclist.value.map((item,index)=>{
 			let {tempurl, tximg, isMainImgChanged, isTxImgChanged, ...rest} = item;
+			// 过滤掉空的技能值
+			let skills = (item.skills || []).filter(skillId => skillId);
 			return{
 				...rest,
-				name: item.cwname,
+				skills: skills,
 				picurl: isMainImgChanged ? cloudToHttps(cloudfiles[index].fileID) : item.picurl,
 				txzimg: isTxImgChanged ? cloudToHttps(txcloudfiles[index].fileID) : item.txzimg,
 				sort: Number(item.sort) || 0,
@@ -320,6 +326,70 @@ const txImg = async(index)=>{
 		}
 	}
 }
+//打开技能选择弹窗
+const openSkillSelect = (picIndex, skillIndex) => {
+	currentEditSkillIndex.value = { picIndex, skillIndex };
+	skillSelectPopupRef.value.open();
+};
+//获取当前编辑的技能ID
+const getCurrentSkillId = () => {
+	const { picIndex, skillIndex } = currentEditSkillIndex.value;
+	if (piclist.value[picIndex] && piclist.value[picIndex].skills) {
+		return piclist.value[picIndex].skills[skillIndex] || '';
+	}
+	return '';
+};
+//获取该宠物所有已选择的技能ID（排除当前正在编辑的槽位）
+const getAllSelectedSkillIds = () => {
+	const { picIndex, skillIndex } = currentEditSkillIndex.value;
+	if (piclist.value[picIndex] && piclist.value[picIndex].skills) {
+		return piclist.value[picIndex].skills.filter((id, idx) => {
+			return id && idx !== skillIndex;
+		});
+	}
+	return [];
+};
+//技能选择回调
+const onSkillSelect = (skillId) => {
+	const { picIndex, skillIndex } = currentEditSkillIndex.value;
+	if (piclist.value[picIndex]) {
+		if (!piclist.value[picIndex].skills) {
+			piclist.value[picIndex].skills = [];
+		}
+		piclist.value[picIndex].skills[skillIndex] = skillId;
+		if (skillId) {
+			loadSkillName(skillId);
+		}
+	}
+};
+//清空技能
+const clearSkill = (picIndex, skillIndex) => {
+	if (piclist.value[picIndex] && piclist.value[picIndex].skills) {
+		piclist.value[picIndex].skills[skillIndex] = '';
+	}
+};
+//获取技能名称
+const getSkillName = (skillId) => {
+	if (!skillId) return '';
+	if (skillNames.value[skillId]) {
+		return skillNames.value[skillId];
+	}
+	loadSkillName(skillId);
+	return '加载中...';
+};
+//加载技能名称
+const loadSkillName = async (skillId) => {
+	if (skillNames.value[skillId]) return;
+	try {
+		const db = uniCloud.database();
+		const res = await db.collection('xxm-bizhi-skills').doc(skillId).get();
+		if (res.result.data && res.result.data.length > 0) {
+			skillNames.value[skillId] = res.result.data[0].name;
+		}
+	} catch (err) {
+		console.error('加载技能名称失败:', err);
+	}
+};
 </script>
 
 
@@ -375,7 +445,70 @@ const txImg = async(index)=>{
 				margin-left: 20px;
 				.skillBox{
 					border: 1px solid #ccc;
-					padding: 5px;
+					padding: 10px;
+					.skillTitle{
+						margin-bottom: 8px;
+						font-weight: bold;
+					}
+					.skillItem{
+						display: grid;
+						grid-template-columns: repeat(3, 1fr);
+						gap: 8px;
+					}
+					.skillNabox{
+						display: flex;
+						align-items: center;
+						gap: 5px;
+						.skillName{
+							min-width: 20px;
+							text-align: center;
+							font-size: 14px;
+						}
+						.skill-select-btn{
+							flex: 1;
+							display: flex;
+							align-items: center;
+							justify-content: space-between;
+							padding: 6px 10px;
+							background: #fff;
+							border: 1px solid #ddd;
+							border-radius: 4px;
+							cursor: pointer;
+							min-height: 32px;
+							font-size: 13px;
+
+							&:hover{
+								border-color: #999;
+							}
+
+							.skill-name-text{
+								flex: 1;
+								overflow: hidden;
+								text-overflow: ellipsis;
+								white-space: nowrap;
+								color: #333;
+							}
+
+							.skill-placeholder{
+								color: #999;
+							}
+
+							.clear-skill{
+								display: flex;
+								align-items: center;
+								justify-content: center;
+								width: 18px;
+								height: 18px;
+								border-radius: 50%;
+								background: #f0f0f0;
+								margin-left: 5px;
+
+								&:hover{
+									background: #e0e0e0;
+								}
+							}
+						}
+					}
 				}
 				.txBox{
 					display: grid;

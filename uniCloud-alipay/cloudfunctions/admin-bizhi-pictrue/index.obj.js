@@ -33,9 +33,9 @@ module.exports = {
 	},
 	async remove(ids = []){
         const dbJQL = uniCloud.databaseForJQL({
-			clientInfo:this.getClientInfo()
-		})
-		let {data} = await dbJQL.collection("xxm-bizhi-piclist")
+			clientInfo:this.getClientInfo()//创建一个JQL数据库对象,用于执行JQL删除
+				})
+		let {data} = await dbJQL.collection("xxm-bizhi-piclist")//查询要删除的图片
 		.where(`_id in(${JSON.stringify(ids)})`).get();
 		let urls = data.map(item => httpsToCloud(item.picurl));
 		let deleteFilePromise = await uniCloud.deleteFile({
@@ -46,7 +46,7 @@ module.exports = {
 		let [,result] = await Promise.all([deleteFilePromise,removePromise]);
 		return result;
 	},
-	async update(params={}){
+	async update(params={}){//更新图片信息
 		const dbJQL = uniCloud.databaseForJQL({
 			clientInfo:this.getClientInfo()
 		})

@@ -36,14 +36,15 @@
 				<uni-th align="left" width="80px">物防值</uni-th>
 				<uni-th align="left" width="80px">魔防值</uni-th>
 				<uni-th align="left" width="80px">生命值</uni-th>
-				<uni-th align="left" >速度值</uni-th>
+				<uni-th align="left" width="80px">速度值</uni-th>
+				<uni-th align="left" width="120px">查看技能</uni-th>
 				<uni-th align="right" width="200px">操作</uni-th>
 			</uni-tr>
 			<uni-tr v-for="item in piclist" :key="item._id">
 				<uni-td >{{ item.user_id[0].nickname }}</uni-td>
 				<uni-td >{{ item.sort }}</uni-td>
 				<uni-td class="thumb"><image @click="previewImg(item.picurl)" :src="item.picurl" mode="aspectFill"></image></uni-td>
-				<uni-td >{{ item.name }}</uni-td>
+				<uni-td >{{ item.cwname }}</uni-td>
 				<uni-td >{{ item.classid[0].name }}</uni-td>
 				<uni-td >{{ item.Fsxid[0].name }}</uni-td>
 				<uni-td class="thumb"><image @click="previewImg(item.txzimg)" :src="item.txzimg" mode="aspectFill"></image></uni-td>
@@ -54,11 +55,14 @@
 				<uni-td >{{ item.m_def }}</uni-td>
 				<uni-td >{{ item.hp }}</uni-td>
 				<uni-td >{{ item.spd }}</uni-td>
+				<uni-td >
+					<button size="mini" type="primary" plain @click="handleSkill(item)">查看技能</button>
+				</uni-td>
 				<uni-td width="200px">
 					<view class="operate-btn-group">
-							<button size="mini" type="primary" plain @click="update(item._id)">修改</button>
-							<button size="mini" type="warn" plain @click="remove(item._id)">删除</button><!-- 删除按钮点击时调用remove函数，传入分类id,item._id是分类id -->
-						</view>
+						<button size="mini" type="primary" plain @click="update(item._id)">修改</button>
+						<button size="mini" type="warn" plain @click="remove(item._id)">删除</button><!-- 删除按钮点击时调用remove函数，传入分类id,item._id是分类id -->
+					</view>
 				</uni-td>
 			</uni-tr>
 		</uni-table>
@@ -69,15 +73,19 @@
 		:page-size="params.pageSize"
 		:show-icon="true" @change="changePage"/>	
 	</view>
+	<petSkillsPopup ref="petSkillsPopupRef" :petName="currentPetName"></petSkillsPopup>
 </template>
 
 <script setup>
 import { ref,onMounted } from 'vue';
 import { routerTo, showModal,showToast,previewImg } from '../../utils/common';
+import petSkillsPopup from "./children/petSkillsPopup.vue";
 const picCloudObj = uniCloud.importObject("admin-bizhi-pictrue");
 const selectvalue = ref("");//用于存储分类选择器的值
 const selectRef = ref(null);//用于清空分类选择器的值时调用clearVal方法
+const petSkillsPopupRef = ref(null);
 const piclist = ref([]);
+const currentPetName = ref('');
 const params = ref({
 	current:1,//当前页码
 	pageSize:10,//每页显示数量
@@ -124,6 +132,12 @@ const remove = async (id)=>{
 		showToast({"title":err});
 	}
 	
+}
+//查看技能
+const handleSkill = (item) => {
+	currentPetName.value = item.cwname;
+	const skillIds = (item.skills || []).filter(id => id);
+	petSkillsPopupRef.value.open(skillIds);
 }
 getData();
 </script>

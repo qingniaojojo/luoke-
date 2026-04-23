@@ -19,18 +19,18 @@
 			"foreignKey": "uni-id-users._id",
 			"defaultValue": {
 				"$env": "uid"
-			}
+				}
 		},
 		"classid": {
 			"bsonType": "string",
 			"title": "属性",
-			"description": "属性 id，参考`xxm-bizhi-classify`表",
+			"description": "属性 id,参考`xxm-bizhi-classify`表",
 			"foreignKey": "xxm-bizhi-classify._id"
 		},
 		"Fsxid": {
 			"bsonType": "string",
 			"title": "副属性",
-			"description": "副属性 id，参考`xxm-bizhi-classify`表",
+			"description": "副属性 id,参考`xxm-bizhi-classify`表",
 			"foreignKey": "xxm-bizhi-classify._id"
 		},
 		"cwname": {
@@ -85,6 +85,13 @@
 		"txzimg": {
 			"bsonType": "string",
 			"description": "特性图地址"
+		},
+		"skills":{
+			"bsonType": "array",
+			"description": "宠物技能ID数组,每个元素是 xxm-bizhi-skills 表的 _id",
+      		"arrayType": "string",
+      		"defaultValue": [],
+      	 	"maxItems": 20	
 		},
 		"createTime": {
 			"bsonType": "timestamp",
