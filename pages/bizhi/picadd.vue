@@ -138,6 +138,7 @@ const currentEditSkillIndex = ref({ picIndex: 0, skillIndex: 0 });//当前正在
 const skillNames = ref({});//存储技能ID对应的技能名称
 const piclist = ref([]);//图片列表，用于存储用户选择的图片，临时存储以数组的方式存储
 const picCloudObj = uniCloud.importObject("admin-bizhi-pictrue");
+const skillCloudObj = uniCloud.importObject("admin-bizhi-skills");
 const handleSelect = async()=>{
 	try {
 		let imgs = await uni.chooseImage({
@@ -378,10 +379,9 @@ const getSkillName = (skillId) => {
 const loadSkillName = async (skillId) => {
 	if (skillNames.value[skillId]) return;
 	try {
-		const db = uniCloud.database();
-		const res = await db.collection('xxm-bizhi-skills').doc(skillId).get();
-		if (res.result.data && res.result.data.length > 0) {
-			skillNames.value[skillId] = res.result.data[0].name;
+		const res = await skillCloudObj.item(skillId);
+		if (res.errCode === 0 && res.data) {
+			skillNames.value[skillId] = res.data.name;
 		}
 	} catch (err) {
 		console.error('加载技能名称失败:', err);

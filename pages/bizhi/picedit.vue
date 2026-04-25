@@ -130,6 +130,7 @@ import skillSelectPopup from "./children/skillSelectPopup.vue";
 const selectvalue = ref("");
 const piclist = ref([]);
 const picCloudObj = uniCloud.importObject("admin-bizhi-pictrue");
+const skillCloudObj = uniCloud.importObject("admin-bizhi-skills");
 const editId = ref("");
 const skillSelectPopupRef = ref(null);
 const currentEditSkillIndex = ref({ picIndex: 0, skillIndex: 0 });
@@ -381,10 +382,9 @@ const getSkillName = (skillId) => {
 const loadSkillName = async (skillId) => {
 	if (skillNames.value[skillId]) return;
 	try {
-		const db = uniCloud.database();
-		const res = await db.collection('xxm-bizhi-skills').doc(skillId).get();
-		if (res.result.data && res.result.data.length > 0) {
-			skillNames.value[skillId] = res.result.data[0].name;
+		const res = await skillCloudObj.item(skillId);
+		if (res.errCode === 0 && res.data) {
+			skillNames.value[skillId] = res.data.name;
 		}
 	} catch (err) {
 		console.error('加载技能名称失败:', err);
