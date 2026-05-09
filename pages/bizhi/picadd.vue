@@ -139,12 +139,13 @@ const skillNames = ref({});//存储技能ID对应的技能名称
 const piclist = ref([]);//图片列表，用于存储用户选择的图片，临时存储以数组的方式存储
 const picCloudObj = uniCloud.importObject("admin-bizhi-pictrue");
 const skillCloudObj = uniCloud.importObject("admin-bizhi-skills");
+
 const handleSelect = async()=>{
 	try {
 		let imgs = await uni.chooseImage({
 			count: 4,
 		})
-		// 获取 tempFilePaths 数组
+		// 获取 tempFilePaths 数组，将用户选择的图片路径，添加到对象中。
 		let obj = {
 				cwname:"",//宠物名称
 				sort:0,//序列号
