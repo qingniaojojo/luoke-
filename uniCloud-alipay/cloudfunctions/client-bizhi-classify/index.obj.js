@@ -3,7 +3,7 @@
 module.exports = {
 	_before: function () {
 	},
-	async list({classid="",_id=""}={}){
+	async list({classid="",_id="",page=1,pageSize=12}={}){
 		let where = {};
 		if(classid){
 			where.$or=[
@@ -17,7 +17,8 @@ module.exports = {
 		const dbJQL = uniCloud.databaseForJQL({
 			clientInfo:this.getClientInfo()
 		})
-		let picTemp = dbJQL.collection("xxm-bizhi-piclist").where(where).field("_id,picurl,classid,Fsxid,sort,cwname").orderBy("sort").limit(12).getTemp();
+		let skip = (page - 1) * pageSize;//跳过数量
+		let picTemp = dbJQL.collection("xxm-bizhi-piclist").where(where).field("_id,picurl,classid,Fsxid,sort,cwname").orderBy("sort").skip(skip).limit(pageSize).getTemp();
 		let classTemp =	dbJQL.collection("xxm-bizhi-classify").field("_id,name,picurl").getTemp();
 		return await dbJQL.collection(picTemp,classTemp).get({getCount:true});
 	}
