@@ -88,5 +88,44 @@ module.exports = {
 			errCode: 0,
 			data: pet
 		};
+	},
+	async getSkillList({page=1,pageSize=20}={}){
+		const db = uniCloud.database();
+		const dbJQL = uniCloud.databaseForJQL({
+			clientInfo:this.getClientInfo()
+		})
+		let skip = (page - 1) * pageSize;
+		
+		// 先查询技能列表
+		let skillResult = await db.collection("xxm-bizhi-skills").orderBy("sort").skip(skip).limit(pageSize).get();
+		let skills = skillResult.data || [];
+		
+		if(skills.length > 0){
+			// 获取所有分类ID
+			let classIds = skills.map(s => s.classid).filter(id => id);
+			
+			if(classIds.length > 0){
+				// 查询分类信息
+				let classResult = await db.collection("xxm-bizhi-classify").where({
+					_id: db.command.in(classIds)
+				}).get();
+				
+				let classMap = {};
+				classResult.data.forEach(c => {
+					classMap[c._id] = c;
+				});
+				
+				// 把分类信息合并到技能中
+				skills = skills.map(s => ({
+					...s,
+					classify: classMap[s.classid] || null
+				}));
+			}
+		}
+		
+		return {
+			errCode: 0,
+			data: skills
+		};
 	}
 }
