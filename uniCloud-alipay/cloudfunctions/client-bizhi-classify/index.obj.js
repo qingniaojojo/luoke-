@@ -3,6 +3,14 @@
 module.exports = {
 	_before: function () {
 	},
+	async getClassifyList(){
+		const db = uniCloud.database();
+		let result = await db.collection("xxm-bizhi-classify").orderBy("sort").get();
+		return {
+			errCode: 0,
+			data: result.data || []
+		};
+	},
 	async list({classid="",_id="",page=1,pageSize=12}={}){
 		let where = {};
 		if(classid){
