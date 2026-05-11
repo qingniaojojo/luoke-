@@ -21,5 +21,64 @@ module.exports = {
 		let picTemp = dbJQL.collection("xxm-bizhi-piclist").where(where).field("_id,picurl,classid,Fsxid,sort,cwname").orderBy("sort").skip(skip).limit(pageSize).getTemp();
 		let classTemp =	dbJQL.collection("xxm-bizhi-classify").field("_id,name,picurl").getTemp();
 		return await dbJQL.collection(picTemp,classTemp).get({getCount:true});
+	},
+	async get({id}={}){
+		const dbJQL = uniCloud.databaseForJQL({
+			clientInfo:this.getClientInfo()
+		})
+		const db = uniCloud.database();
+		
+		// 1. 查询宠物信息
+		let picTemp = dbJQL.collection("xxm-bizhi-piclist").where({_id: id}).getTemp();
+		let classTemp =	dbJQL.collection("xxm-bizhi-classify").field("_id,name,picurl").getTemp();
+		let petResult = await dbJQL.collection(picTemp,classTemp).get();
+		
+		if(!petResult.data || petResult.data.length === 0){
+			return {
+				errCode: -1,
+				errMsg: "未找到宠物数据"
+			};
+		}
+		
+		let pet = petResult.data[0];
+		
+		// 2. 整理属性数据
+		pet.wuli = [{
+			wugong: pet.p_at || 0,
+			wufang: pet.p_def || 0,
+			mogong: pet.m_at || 0,
+			mofang: pet.m_def || 0,
+			sudu: pet.spd || 0,
+			jingli: pet.hp || 0
+		}];
+		
+		// 3. 查询技能信息（包含分类信息）
+		pet.jineng = [];
+		if(pet.skills && pet.skills.length > 0){
+			let skillIds = pet.skills.filter(skillId => skillId);
+			if(skillIds.length > 0){
+				// 使用JQL联表查询技能和分类信息
+				let skillTemp = dbJQL.collection("xxm-bizhi-skills").where({
+					_id: dbJQL.command.in(skillIds)
+				}).getTemp();
+				let skillClassTemp = dbJQL.collection("xxm-bizhi-classify").field("_id,name,picurl").getTemp();
+				let skillResult = await dbJQL.collection(skillTemp, skillClassTemp).get();
+				
+				if(skillResult.data && skillResult.data.length > 0){
+					// 整理技能字段名，映射成前端需要的格式
+					pet.jineng = skillResult.data.map(skill => ({
+						...skill,
+						jnmc: skill.name, // 技能名称
+						jnms: skill.description, // 技能描述
+						pp: skill.cost || 0 // 技能消耗
+					}));
+				}
+			}
+		}
+		
+		return {
+			errCode: 0,
+			data: pet
+		};
 	}
 }
