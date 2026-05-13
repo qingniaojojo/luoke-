@@ -183,6 +183,12 @@
 	"style": {
 		"navigationBarTitleText": "宠物技能"
 	}
+},
+{
+	"path": "pages/activity/banner",
+	"style": {
+		"navigationBarTitleText": ""
+	}
 }
 ],
 	"subPackages": [{

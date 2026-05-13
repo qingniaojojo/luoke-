@@ -1,0 +1,52 @@
+{
+	"bsonType": "object",
+	"required": [
+		"name"
+	],
+	"permission": {
+		"read": true,
+		"create": true,
+		"update": true,
+		"delete": true
+	},
+	"properties": {
+		"_id": {
+			"description": "存储文档 ID（文章 ID），系统自动生成"
+		},
+		"picurl": {
+			"bsonType": "string",
+			"description": "轮播图地址"
+		},
+		"url": {
+			"bsonType": "string",
+			"description": "跳转地址"
+		},
+		"sort": {
+			"bsonType": "int",
+			"description": "类别显示顺序",
+			"defaultValue":"0"
+		},
+		"checked":{
+			"bsonType": "bool",
+			"description": "是否可见",
+			"defaultValue": true
+		},
+		"target": {
+			"bsonType": "string",
+			"description": "跳转类型",//默认self站内 minprogram站外
+			"defaultValue": "self"
+		},
+		"appid": {
+			"bsonType": "string",
+			"description": "外站appid"
+		},
+		"createTime": {
+			"bsonType": "timestamp",
+			"description": "创建时间",
+			"forceDefaultValue": {
+				"$env": "now"
+			}
+		}
+	},
+	"version": "0.0.1"
+}
