@@ -29,7 +29,7 @@
 				<uni-forms-item label="跳转方式" name="target">
 					<uni-data-select v-model="formData.target" :localdata="targetOptions" placeholder="请选择跳转方式"></uni-data-select>
 				</uni-forms-item>
-				<uni-forms-item label="appid" name="appid">
+				<uni-forms-item label="appid" name="appid" v-if="formData.target==='miniprogram'">
 					<uni-easyinput type="text" v-model="formData.appid" placeholder="请输入外站appid" />
 				</uni-forms-item>
 				<uni-forms-item label="是否启用" name="checked">

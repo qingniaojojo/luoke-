@@ -1,0 +1,10 @@
+{
+    "name": "client-activity-banner",
+    "version": "0.0.1",
+    "description": "客户端轮播图云对象",
+    "main": "index.obj.js",
+    "extensions": {
+        "uni-cloud-jql": {}
+    },
+    "dependencies": {}
+}

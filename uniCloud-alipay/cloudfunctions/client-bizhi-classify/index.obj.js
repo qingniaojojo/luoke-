@@ -17,9 +17,33 @@ module.exports = {
 		const dbJQL = uniCloud.databaseForJQL({
 			clientInfo:this.getClientInfo()
 		})
-		let skip = (page - 1) * pageSize;//跳过数量
+		let skip = (page - 1) * pageSize;
 		let picTemp = dbJQL.collection("xxm-bizhi-piclist").where(where).field("_id,picurl,classid,Fsxid,sort,cwname").orderBy("sort").skip(skip).limit(pageSize).getTemp();
 		let classTemp =	dbJQL.collection("xxm-bizhi-classify").field("_id,name,picurl").getTemp();
 		return await dbJQL.collection(picTemp,classTemp).get({getCount:true});
+	},
+	async getSkillList({page=1,pageSize=12}={}){
+		const dbJQL = uniCloud.databaseForJQL({
+			clientInfo:this.getClientInfo()
+		})
+		let skip = (page - 1) * pageSize;
+		let skillTemp = dbJQL.collection("xxm-bizhi-skills").orderBy("sort").skip(skip).limit(pageSize).getTemp();
+		let classTemp = dbJQL.collection("xxm-bizhi-classify").field("_id,name,picurl").getTemp();
+		return await dbJQL.collection(skillTemp,classTemp).get({getCount:true});
+	},
+	async getClassifyList(){
+		const dbJQL = uniCloud.databaseForJQL({
+			clientInfo:this.getClientInfo()
+		})
+		return await dbJQL.collection("xxm-bizhi-classify").get();
+	},
+	async get({id=""}={}){
+		const dbJQL = uniCloud.databaseForJQL({
+			clientInfo:this.getClientInfo()
+		})
+		let picTemp = dbJQL.collection("xxm-bizhi-piclist").doc(id).getTemp();
+		let classTemp = dbJQL.collection("xxm-bizhi-classify").field("_id,name,picurl").getTemp();
+		let skillTemp = dbJQL.collection("xxm-bizhi-skills").field("_id,name,classid,picurl,pp,jnms").getTemp();
+		return await dbJQL.collection(picTemp,classTemp,skillTemp).get({getOne:true});
 	}
 }
