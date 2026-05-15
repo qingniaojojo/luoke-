@@ -8,66 +8,9 @@
  * @param {Function} uploadFileOptions 获取上传参数的函数，仅扩展存储有效
  */
 function init(options = {}) {
-	let {
-		provider: defaultProvider,
-	} = options;
-	let originalDefaultProvider = defaultProvider;
-	let extStorage = new ExtStorage(options);
-
-	const uploadFile = uniCloud.uploadFile;
-	uniCloud.uploadFile = (...e) => {
-		let options = e[0] || {};
-		let {
-			provider = defaultProvider
-		} = options;
-		if (provider === "extStorage") {
-			return extStorage.uploadFile(...e);
-		} else {
-			return uploadFile(...e);
-		}
-	}
-
-	const getTempFileURL = uniCloud.getTempFileURL;
-	uniCloud.getTempFileURL = (...e) => {
-		let options = e[0] || {};
-		let {
-			provider = defaultProvider
-		} = options;
-		if (provider === "extStorage") {
-			return extStorage.getTempFileURL(...e);
-		} else {
-			return getTempFileURL(...e);
-		}
-	}
-
-	const deleteFile = uniCloud.deleteFile;
-	uniCloud.deleteFile = (...e) => {
-		let options = e[0] || {};
-		let {
-			provider = defaultProvider
-		} = options;
-		if (provider === "extStorage") {
-			return extStorage.deleteFile(...e);
-		} else {
-			return deleteFile(...e);
-		}
-	}
-
-	uniCloud.setCloudStorage = (data={}) => {
-		let {
-			provider,
-			domain,
-			fileID2fileURL,
-		} = data;
-		if (provider === null) {
-			defaultProvider = originalDefaultProvider;
-		} else if (provider) {
-			defaultProvider = provider;
-		}
-		if (domain) extStorage.domain = domain;
-		if (fileID2fileURL) extStorage.fileID2fileURL = fileID2fileURL;
-	}
-
+	// 禁用扩展存储功能，直接使用原生 uniCloud 功能
+	console.log('扩展存储功能已禁用，使用原生 uniCloud 上传');
+	return;
 }
 
 export default {

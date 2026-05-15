@@ -62,7 +62,7 @@
 
 			// 设置 uniCloud.uploadFile 默认上传的云存储供应商
 			uploadFileForExtStorage.init({
-				provider: "unicloud", // provider代表默认上传到哪，可选项 "unicloud" 内置存储; "extStorage" 扩展存储;
+				provider: "unicloud", // provider代表默认上传到哪，可选项 "unicloud" 内置存储; "extStorage" 扩展
 				domain: "cdn.example.com", //【重要】这里需要改成你开通扩展存储时绑定的自定义域名）
 				fileID2fileURL: true, // 将fileID转成fileURL，方便兼容老项目
 				// 获取上传参数的函数
