@@ -42,8 +42,8 @@
 					<uni-td>{{formatTime(item.createTime)}}</uni-td>
 					<uni-td>
 						<view class="operate-btn-group">
-							<button size="mini" type="primary" plain @click="update(item._id)">修改</button>
-							<button size="mini" type="warn" plain @click="remove(item._id)">删除</button>
+							<button :disabled="!hasPermission('UPDATE_PERMISSION')" size="mini" type="primary" plain @click="update(item._id)">修改</button>
+							<button :disabled="!hasPermission('DELETE_PERMISSION')" size="mini" type="warn" plain @click="remove(item._id)">删除</button>
 						</view>
 					</uni-td>
 				</uni-tr>
@@ -56,7 +56,7 @@
 <script setup>
 import { ref } from "vue";
 import bannerPopup from "./children/bannerPopup.vue"
-import { showModal,showToast } from "../../utils/common";
+import { showModal,showToast,hasPermission } from "../../utils/common";
 import dayjs from "dayjs";
 const bannerCloudObj = uniCloud.importObject("admin-activity-obj",{customUI:true})
 const bannerPopRef = ref(null);

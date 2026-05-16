@@ -49,8 +49,8 @@
 				<uni-td>{{ item.cost }}</uni-td>
 				<uni-td width="200px">
 					<view class="operate-btn-group">
-						<button size="mini" type="primary" plain @click="handleEdit(item._id)">修改</button>
-						<button size="mini" type="warn" plain @click="handleDelete(item._id)">删除</button>
+						<button :disabled="!hasPermission('UPDATE_PERMISSION')" size="mini" type="primary" plain @click="handleEdit(item._id)">修改</button>
+						<button :disabled="!hasPermission('DELETE_PERMISSION')" size="mini" type="warn" plain @click="handleDelete(item._id)">删除</button>
 					</view>
 				</uni-td>
 			</uni-tr>
@@ -69,7 +69,7 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
-import { showModal, showToast, previewImg } from '../../utils/common';
+import { showModal, showToast, previewImg ,hasPermission } from '../../utils/common';
 import skillPopup from "./children/skillPopup.vue";
 
 const skillCloudObj = uniCloud.importObject("admin-bizhi-skills");

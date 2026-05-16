@@ -4,7 +4,7 @@
 	"description": "提供应用渠道和小程序场景值的数据字典",
 	"required": [],
 	"permission": {
-		"read": false,
+		"read": true,
 		"create": false,
 		"update": false,
 		"delete": false

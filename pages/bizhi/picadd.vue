@@ -114,8 +114,8 @@
 					</view>
 				</view>
 				<view class="btnGroup" v-if="piclist.length">
-					<button class="btn" type="primary" @click="subMit">发布</button>
-					<button class="btn" type="warn" plain @click="handleReset">清空</button>
+					<button :disabled="!hasPermission('UPDATE_PERMISSION')" class="btn" type="primary" @click="subMit">发布</button>
+					<button :disabled="!hasPermission('DELETE_PERMISSION')" class="btn" type="warn" plain @click="handleReset">清空</button>
 				</view>
 			</view>
 		</view>
@@ -126,7 +126,7 @@
 
 <script setup>
 import {ref} from 'vue';
-import { routerTo, showModal, showToast } from '../../utils/common';
+import { routerTo, showModal, showToast, hasPermission } from '../../utils/common';
 import { cloudToHttps, convertBlobUrlToWebP } from '../../utils/tools';// 添加这一行
 import dayjs from 'dayjs';
 import skillSelectPopup from "./children/skillSelectPopup.vue";

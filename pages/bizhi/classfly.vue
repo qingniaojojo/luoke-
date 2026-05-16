@@ -43,12 +43,12 @@
 						<uni-tag v-else text="普通" inverted/>
 					</uni-td>
 					<uni-td>
-						<switch :checked="item.enable" style="transform:scale(0.6);transform-origin: left center;" @change="enableChange($event,item._id)"/>
+						<switch :disabled="!hasPermission('UPDATE_PERMISSION')" :checked="item.enable" style="transform:scale(0.6);transform-origin: left center;" @change="enableChange($event,item._id)"/>
 					</uni-td>
 					<uni-td>
 						<view class="operate-btn-group">
-							<button size="mini" type="primary" plain @click="update(item._id)">修改</button>
-							<button size="mini" type="warn" plain @click="remove(item._id)">删除</button><!-- 删除按钮点击时调用remove函数，传入分类id,item._id是分类id -->
+							<button :disabled="!hasPermission('UPDATE_PERMISSION')" size="mini" type="primary" plain @click="update(item._id)">修改</button>
+							<button :disabled="!hasPermission('DELETE_PERMISSION')" size="mini" type="warn" plain @click="remove(item._id)">删除</button><!-- 删除按钮点击时调用remove函数，传入分类id,item._id是分类id -->
 						</view>
 					</uni-td>
 				</uni-tr>
@@ -58,19 +58,22 @@
 		<view class="paging">
 			<!-- <uni-pagination title="标题文字" show-icon="true" total="3" current="2"></uni-pagination>-->
 		</view>
-		<classifyPopup ref="classPopRef" :item="item" :type="type" @success="getClassify()" :maxSort= "classData[classData.length-1]?.sort"> </classifyPopup><!-- 被封装的弹窗调用 新增分类弹窗成功后(触发success事件)，刷新分类列表(用getClassify())-->
+		<classifyPopup ref="classPopRef" :item="item" :type="type" @success="getClassify()" :maxSort= "classData.length > 0 ? classData[classData.length-1]?.sort : 0"> </classifyPopup><!-- 被封装的弹窗调用 新增分类弹窗成功后(触发success事件)，刷新分类列表(用getClassify())-->
 	</view>
 </template>
 
 <script setup>
 import { ref } from "vue";//引入vue的ref函数
 import classifyPopup from "./children/classifyPoup.vue"//引入新增分类弹窗组件
-import { showModal,showToast } from "../../utils/common";//引入提示函数
+import { showModal,showToast,hasPermission } from "../../utils/common";//引入提示函数
 const classifyCloudObj = uniCloud.importObject("admin-bizhi-classify",{customUI:true})//拿取云对象
 const classPopRef = ref(null);//新增分类弹窗引用
 const item = ref({});//新增分类弹窗数据
 const classData = ref([]);//分类列表数据
 const type =ref("add");
+
+console.log(hasPermission("ADD_PERMISSION"));
+
 // 点击新增分类按钮时调用，打开弹窗。为了在父组件中调用子组件
 const handleAPP = ()=>{//新增分类
 	type.value = 'add';
@@ -120,6 +123,7 @@ const enableChange = async(e,id)=>{
 		getClassify();
 	}catch(err){
 		console.log(err);
+		showToast({title:err.errMsg})
 	}finally{
 		uni.hideLoading();
 	}

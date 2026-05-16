@@ -51,3 +51,7 @@ export function previewImg(url){
 		urls:[url]
 	})
 }
+export function hasPermission(value){
+	let {permission=[],role=[]} = uniCloud.getCurrentUserInfo()
+	return role.includes("admin") || permission.includes(value)
+}

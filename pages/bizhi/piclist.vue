@@ -60,8 +60,8 @@
 				</uni-td>
 				<uni-td width="200px">
 					<view class="operate-btn-group">
-						<button size="mini" type="primary" plain @click="update(item._id)">修改</button>
-						<button size="mini" type="warn" plain @click="remove(item._id)">删除</button><!-- 删除按钮点击时调用remove函数，传入分类id,item._id是分类id -->
+						<button :disabled="!hasPermission('UPDATE_PERMISSION')" size="mini" type="primary" plain @click="update(item._id)">修改</button>
+						<button :disabled="!hasPermission('DELETE_PERMISSION')" size="mini" type="warn" plain @click="remove(item._id)">删除</button><!-- 删除按钮点击时调用remove函数，传入分类id,item._id是分类id -->
 					</view>
 				</uni-td>
 			</uni-tr>
@@ -78,7 +78,7 @@
 
 <script setup>
 import { ref,onMounted } from 'vue';
-import { routerTo, showModal,showToast,previewImg } from '../../utils/common';
+import { routerTo, showModal,showToast,previewImg ,hasPermission} from '../../utils/common';
 import petSkillsPopup from "./children/petSkillsPopup.vue";
 const picCloudObj = uniCloud.importObject("admin-bizhi-pictrue");
 const selectvalue = ref("");//用于存储分类选择器的值

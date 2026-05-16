@@ -6,9 +6,9 @@
 	],
 	"permission": {
 		"read": true,
-		"create": true,
-		"update": true,
-		"delete": true
+		"create": "'manage' in auth.role",
+		"update": "'UPDATE_PERMISSION' in auth.permission",
+		"delete": "'DELETE_PERMISSION' in auth.permission"
 	},
 	"properties": {
 		"_id": {

@@ -5,9 +5,9 @@
 	],
 	"permission": {
 		"read": true,
-		"create": false,
-		"update": false,
-		"delete": false//增删改查权限开启与关闭
+		"create": "'manage' in auth.role",
+		"update": "'UPDATE_PERMISSION' in auth.permission",
+		"delete": "'DELETE_PERMISSION' in auth.permission"
 	},
 	"properties": {
 		"_id": {
