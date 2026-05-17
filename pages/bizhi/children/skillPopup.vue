@@ -195,9 +195,12 @@ const delImg = () => {
 };
 // 打开弹窗
 const open = () => {
-	nextTick(() => {
-		if (props.type == 'add') formData.value.sort = (props.maxSort || 0) + 1;
-	});
+	if (props.type == 'add') {
+		init();
+		nextTick(() => {
+			formData.value.sort = (props.maxSort || 0) + 1;
+		});
+	}
 	SkillPopup.value.open();
 };
 // 关闭弹窗
