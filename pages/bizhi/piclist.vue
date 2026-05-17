@@ -30,7 +30,7 @@
 				<uni-th align="left"width="100px">属性名称</uni-th>
 				<uni-th align="left"width="100px">副属性名称</uni-th>
 				<uni-th align="left"width="100px">特性图片</uni-th>
-				<uni-th align="left"width="100px">特性详情</uni-th>
+				<uni-th align="left"width="260px">特性详情</uni-th>
 				<uni-th align="left" width="80px">物攻值</uni-th>
 				<uni-th align="left" width="80px">魔攻值</uni-th>
 				<uni-th align="left" width="80px">物防值</uni-th>
