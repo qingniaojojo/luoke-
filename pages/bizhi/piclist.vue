@@ -41,12 +41,12 @@
 				<uni-th align="right" width="200px">操作</uni-th>
 			</uni-tr>
 			<uni-tr v-for="item in piclist" :key="item._id">
-				<uni-td >{{ item.user_id[0].nickname }}</uni-td>
+				<uni-td >{{ item.user_id?.[0]?.nickname || '' }}</uni-td>
 				<uni-td >{{ item.sort }}</uni-td>
 				<uni-td class="thumb"><image @click="previewImg(item.picurl)" :src="item.picurl" mode="aspectFill"></image></uni-td>
 				<uni-td >{{ item.cwname }}</uni-td>
-				<uni-td >{{ item.classid[0].name }}</uni-td>
-				<uni-td >{{ item.Fsxid[0].name }}</uni-td>
+				<uni-td >{{ item.classid?.[0]?.name || '' }}</uni-td>
+				<uni-td >{{ item.Fsxid?.[0]?.name || '' }}</uni-td>
 				<uni-td class="thumb"><image @click="previewImg(item.txzimg)" :src="item.txzimg" mode="aspectFill"></image></uni-td>
 				<uni-td >{{ item.description }}</uni-td>
 				<uni-td >{{ item.p_at }}</uni-td>
