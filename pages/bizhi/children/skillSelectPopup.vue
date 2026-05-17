@@ -208,10 +208,13 @@ defineExpose({
 		flex: 1;
 		min-height: 300px;
 		max-height: 400px;
+		height: 400px;
 		overflow: hidden;
+		display: flex;
+		flex-direction: column;
 
 		.scroll-view {
-			height: 100%;
+			height: 400px;
 		}
 
 		.skill-item {

@@ -125,14 +125,17 @@ defineExpose({
 }
 
 .popup-content {
-	max-height: 60vh;
-	overflow: hidden;
+		max-height: 600rpx;
+		height: 600rpx;
+		overflow: hidden;
+		display: flex;
+		flex-direction: column;
 
-	.scroll-view {
-		height: 100%;
-		max-height: 60vh;
+		.scroll-view {
+			height: 600rpx;
+			flex: 1;
+		}
 	}
-}
 
 .empty {
 	display: flex;
