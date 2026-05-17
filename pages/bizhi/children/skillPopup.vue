@@ -7,6 +7,7 @@
 				</uni-forms-item>
 				<uni-forms-item label="技能分类" name="classid" required>
 					<uni-data-select 
+						ref="selectRef"
 						collection="xxm-bizhi-classify" 
 						field="_id as value, name as text" 
 						:where='`enable == true`' 
@@ -75,6 +76,7 @@ onUnmounted(() => {
 
 const formRef = ref(null);
 const SkillPopup = ref(null);
+const selectRef = ref(null);
 
 const formData = ref({
 	name: "",
@@ -87,10 +89,10 @@ const formData = ref({
 	cost: 0
 });
 
-watch(() => props.item, (nv) => {
+watch(() => [props.item, props.type], ([nv, type]) => {
 	// 编辑时，不设置 tempurl，直接使用 picurl
 	// 确保处理数据结构
-	if (nv) {
+	if (type === 'update' && nv && nv._id) {
 		// 如果 classid 是数组，取第一个元素的 _id
 		let classidValue = nv.classid;
 		if (Array.isArray(classidValue) && classidValue.length > 0) {
@@ -223,6 +225,12 @@ const init = () => {
 		power: 0,
 		cost: 0
 	};
+	// 清空 uni-data-select 组件的内部缓存
+	nextTick(() => {
+		if (selectRef.value && selectRef.value.clearVal) {
+			selectRef.value.clearVal();
+		}
+	});
 };
 // 导出方法
 defineExpose({
