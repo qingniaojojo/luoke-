@@ -1,0 +1,6 @@
+{
+  "name": "perf-test-api",
+  "version": "1.0.0",
+  "description": "性能测试HTTP接口包装云函数",
+  "main": "index.js"
+}
